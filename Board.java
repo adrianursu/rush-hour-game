@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Board {
     public static final int HEIGHT = 6;
-    public static final int WIDTH = 10;
+    public static final int WIDTH = 14;
 
-    private List<Vehicle> vehicles;
+    private final List<Vehicle> vehicles;
 
     public Board() {
         this.vehicles = new ArrayList<>();
@@ -29,15 +30,15 @@ public class Board {
             }
         }
 
+        // Place vehicles
         for (Vehicle vehicle : vehicles) {
-            board[vehicle.getRow()][vehicle.getCol()] = "X";
             if (vehicle.isVertical()) {
-                for (int i = 1; i < vehicle.getLength(); i++) {
-                    board[vehicle.getRow() + i][vehicle.getCol()] = "X";
+                for (int i = 0; i < vehicle.getLength(); i++) {
+                    board[vehicle.getRow() + i][vehicle.getCol()] = vehicle.getId();
                 }
             } else {
-                for (int i = 1; i < vehicle.getLength(); i++) {
-                    board[vehicle.getRow()][vehicle.getCol() + i] = "X";
+                for (int i = 0; i < vehicle.getLength(); i++) {
+                    board[vehicle.getRow()][vehicle.getCol() + i] = vehicle.getId();
                 }
             }
         }
@@ -47,7 +48,7 @@ public class Board {
             for (int j = 0; j < WIDTH; j++) {
                 System.out.print(board[i][j] + " ");
             }
-            System.out.println(); // Move to the next line after printing a row
+            System.out.println();
         }
 
         System.out.println();
@@ -58,7 +59,14 @@ public class Board {
         return true;
     }
 
-    public void moveVehicle(Vehicle vehicle, int offset) {
+    public void moveVehicle1(Vehicle vehicle, int offset) { //todo remove this
         vehicle.move(offset);
+    }
+
+
+    public void moveVehicle(String vehicleId, int offset) {
+        Vehicle v = vehicles.stream().filter(veh -> veh.getId().equals(vehicleId)).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + vehicleId + " not found"));
+
+        v.move(offset);
     }
 }

@@ -4,6 +4,7 @@ public class Vehicle {
     private int row;
     private int col;
     private boolean isVertical;
+    private String id;
 
     public int getRow() {
         return row;
@@ -13,14 +14,16 @@ public class Vehicle {
         return col;
     }
 
-
     public int getLength() {
         return length;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public void setRow(int row) {
         this.row = row;
-
     }
 
     public void setCol(int col) {
@@ -43,15 +46,16 @@ public class Vehicle {
         }
     }
 
-    public Vehicle(boolean isMain, int length, int row, int col, boolean isVertical) {
+    public Vehicle(boolean isMain, int length, int row, int col, boolean isVertical, char id) {
         this.isMain = isMain;
         this.length = length;
         this.row = row;
         this.col = col;
         this.isVertical = isVertical;
+        this.id = id + "";
     }
 
     public static Vehicle createMainVehicle() {
-        return new Vehicle(true, 2, -1, 0, false);
+        return new Vehicle(true, 2, -1, 0, false, '>');
     }
 }
