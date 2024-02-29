@@ -4,9 +4,7 @@ public class Main {
     public static void main(String[] args) {
         Board b = new Board();
 
-        Vehicle v1 = Vehicle.createMainVehicle();
-        v1.setRow(2);
-
+        Vehicle v1 = new Vehicle(true, 2, 2, 0, false, '>');
         Vehicle v2 = new Vehicle(false, 3, 0, 3, true, 'A');
 
         b.addVehicle(v1);

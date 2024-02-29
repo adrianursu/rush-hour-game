@@ -1,10 +1,10 @@
 public class Vehicle {
     private boolean isMain;
-    private int length;
+    private final int length;
     private int row;
     private int col;
-    private boolean isVertical;
-    private String id;
+    private final boolean isVertical;
+    private final String id;
 
     public int getRow() {
         return row;
@@ -22,23 +22,15 @@ public class Vehicle {
         return id;
     }
 
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    public void setCol(int col) {
-        this.col = col;
-    }
-
     public boolean isVertical() {
         return isVertical;
     }
 
-    public void move(int offset) {
-        //if arg 0 => doesn't move
-        //if arg positive => moves down/right
-        //if arg negative => moves up/left
+    public boolean isMain() {
+        return isMain;
+    }
 
+    public void move(int offset) {
         if (isVertical) {
             row += offset;
         } else {
@@ -53,9 +45,5 @@ public class Vehicle {
         this.col = col;
         this.isVertical = isVertical;
         this.id = id + "";
-    }
-
-    public static Vehicle createMainVehicle() {
-        return new Vehicle(true, 2, -1, 0, false, '>');
     }
 }
