@@ -46,4 +46,8 @@ public class Vehicle {
         this.isVertical = isVertical;
         this.id = id + "";
     }
+
+    public Vehicle copy()  {
+        return new Vehicle(isMain, length, row, col, isVertical, id.charAt(0)); // Create a new Vehicle object with the same properties (copy constructor)
+    }
 }
