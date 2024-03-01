@@ -121,10 +121,10 @@ public class Board {
 
     private void checkIfVehicleLeavesTheBoard(Vehicle vehicle) throws Exception {
         if (vehicle.isVertical()) {
-            if (vehicle.getRowStart() < 0 || vehicle.getRowStart() + vehicle.getLength() > HEIGHT)
+            if (vehicle.getRowStart() < 0 || vehicle.getRowEnd() > (HEIGHT - 1))
                 throw new Exception("Vehicle leaves the board");
         } else {
-            if (vehicle.getColStart() < 0 || vehicle.getColStart() + vehicle.getLength() > WIDTH)
+            if (vehicle.getColStart() < 0 || vehicle.getColEnd() > (WIDTH - 1))
                 throw new Exception("Vehicle leaves the board");
         }
     }

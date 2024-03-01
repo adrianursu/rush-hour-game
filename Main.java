@@ -30,19 +30,36 @@ public class Main {
         scanner.close();
     }
 
+    //p23 in tutorial
     private static Board getInitialState1() {
-        Board b = new Board();
+        Board board = new Board();
 
-        Vehicle heroLeft = new Vehicle(true, true, 2, 2, 0, false, '>');
-//        Vehicle v1 = new Vehicle(false, false, 2, 1, 3, false, 'a');
-        Vehicle v2 = new Vehicle(false, false, 2, 1, 6, true, 'b');
-        Vehicle v3 = new Vehicle(false, false, 2, 4, 6, true, 'c');
+        Vehicle heroLeft = new Vehicle(true, true, 2, 1, 0, false, '>');
+        Vehicle heroRight = new Vehicle(true, false, 2, 4, 12, false, '<');
+        Vehicle a = new Vehicle(false, false, 3, 4, 0, false, 'a');
+        Vehicle b = new Vehicle(false, false, 3, 3, 3, true, 'b');
+        Vehicle c = new Vehicle(false, false, 2, 0, 4, true, 'c');
+        Vehicle d = new Vehicle(false, false, 2, 1, 5, true, 'd');
+        Vehicle e = new Vehicle(false, false, 2, 2, 6, true, 'e');
+        Vehicle f = new Vehicle(false, false, 2, 2, 7, true, 'f');
+        Vehicle g = new Vehicle(false, false, 2, 3, 8, true, 'g');
+        Vehicle h = new Vehicle(false, false, 2, 4, 9, true, 'h');
+        Vehicle i = new Vehicle(false, false, 3, 0, 10, true, 'i');
+        Vehicle j = new Vehicle(false, false, 3, 1, 11, false, 'j');
 
-        b.addVehicle(heroLeft);
-//        b.addVehicle(v1);
-        b.addVehicle(v2);
-//        b.addVehicle(v3);
+        board.addVehicle(heroLeft);
+        board.addVehicle(heroRight);
+        board.addVehicle(a);
+        board.addVehicle(b);
+        board.addVehicle(c);
+        board.addVehicle(d);
+        board.addVehicle(e);
+        board.addVehicle(f);
+        board.addVehicle(g);
+        board.addVehicle(h);
+        board.addVehicle(i);
+        board.addVehicle(j);
 
-        return b;
+        return board;
     }
 }
