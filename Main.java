@@ -1,42 +1,48 @@
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        Board b = new Board();
-
-        Vehicle v1 = new Vehicle(true, 2, 2, 0, false, '>');
-        Vehicle v2 = new Vehicle(false, 3, 0, 3, true, 'A');
-
-        b.addVehicle(v1);
-        b.addVehicle(v2);
-
-        b.printBoard();
-
-        b.moveVehicle(">", 1);
-
+    public static void main(String[] args) {
+        Board b = getInitialState1();
         b.printBoard();
 
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("Enter in format: PIECE_NAME,MOVE_OFFSET"); //e.g. 'A,2' => this will move A 2 places DOWN/RIGHT
+            System.out.println("Enter move:"); //e.g. 'a2' => this will move a 2 places DOWN/RIGHT
             String input = scanner.nextLine();
 
             if ("-1".equals(input)) break;
 
             try {
-                String[] strParts = input.split(",");
-                b.moveVehicle(strParts[0], Integer.parseInt(strParts[1]));
+                b.moveVehicle(input.substring(0, 1), Integer.parseInt(input.substring(1)));
                 b.printBoard();
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                if (e instanceof VictoryException) {
+                    System.out.println(e.getMessage());
+                    b.printBoard();
+                    break;
+                } else {
+                    System.out.println("Error: " + e.getMessage());
+                }
             }
         }
 
-        scanner.close(); // Close the scanner
+        scanner.close();
     }
 
-    private Board getRandomInitialState() {
-        return new Board();
+    private static Board getInitialState1() {
+        Board b = new Board();
+
+        Vehicle heroLeft = new Vehicle(true, true, 2, 2, 0, false, '>');
+//        Vehicle v1 = new Vehicle(false, false, 2, 1, 3, false, 'a');
+        Vehicle v2 = new Vehicle(false, false, 2, 1, 6, true, 'b');
+        Vehicle v3 = new Vehicle(false, false, 2, 4, 6, true, 'c');
+
+        b.addVehicle(heroLeft);
+//        b.addVehicle(v1);
+        b.addVehicle(v2);
+//        b.addVehicle(v3);
+
+        return b;
     }
 }
