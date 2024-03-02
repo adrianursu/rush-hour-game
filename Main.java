@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Board b = getInitialState1();
         b.printBoard();
 
@@ -36,7 +36,7 @@ public class Main {
 
         Vehicle heroLeft = new Vehicle(true, true, 2, 1, 0, false, '>');
         Vehicle heroRight = new Vehicle(true, false, 2, 4, 12, false, '<');
-        Vehicle a = new Vehicle(false, false, 3, 4, 0, false, 'a');
+        Vehicle a = new Vehicle(false, false, 2, 0, 2, false, 'a');
         Vehicle b = new Vehicle(false, false, 3, 3, 3, true, 'b');
         Vehicle c = new Vehicle(false, false, 2, 0, 4, true, 'c');
         Vehicle d = new Vehicle(false, false, 2, 1, 5, true, 'd');
@@ -45,21 +45,25 @@ public class Main {
         Vehicle g = new Vehicle(false, false, 2, 3, 8, true, 'g');
         Vehicle h = new Vehicle(false, false, 2, 4, 9, true, 'h');
         Vehicle i = new Vehicle(false, false, 3, 0, 10, true, 'i');
-        Vehicle j = new Vehicle(false, false, 3, 1, 11, false, 'j');
+        Vehicle j = new Vehicle(false, false, 2, 2, 2, false, 'j');
 
-        board.addVehicle(heroLeft);
-        board.addVehicle(heroRight);
-        board.addVehicle(a);
-        board.addVehicle(b);
-        board.addVehicle(c);
-        board.addVehicle(d);
-        board.addVehicle(e);
-        board.addVehicle(f);
-        board.addVehicle(g);
-        board.addVehicle(h);
-        board.addVehicle(i);
-        board.addVehicle(j);
+        try {
+            board.addVehicle(heroLeft);
+            board.addVehicle(heroRight);
+            board.addVehicle(a);
+            board.addVehicle(b);
+            board.addVehicle(c);
+            board.addVehicle(d);
+            board.addVehicle(e);
+            board.addVehicle(f);
+            board.addVehicle(g);
+            board.addVehicle(h);
+            board.addVehicle(i);
+            board.addVehicle(j);
+        } catch (Exception e1) {
+            e1.printStackTrace();
 
+        }
         return board;
-    }
-}
+}}
+
