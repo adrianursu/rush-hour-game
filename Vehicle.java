@@ -11,6 +11,10 @@ public class Vehicle {
         return rowStart;
     }
 
+    public void setRowStart(int rowStart) {
+        this.rowStart = rowStart;
+    }
+
     public int getRowEnd() {
         return rowStart + length - 1;
     }
