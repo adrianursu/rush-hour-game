@@ -32,18 +32,28 @@ public class Board {
         this.vehicles.add(vehicle);
     }
 
-    public void moveVehicle(String vehicleId, int offset) throws Exception {
+    public void moveVehicle(String vehicleId, int offset, boolean isLeftPlayersMove) throws Exception {
         Vehicle vehicle = vehicles.stream().filter(veh -> veh.getId().equals(vehicleId)).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + vehicleId + " not found"));
+
+        checkIfPlayerIsAllowedToMoveVehicle(vehicle, isLeftPlayersMove);
+
+        if (offset == 0) throw new Exception("0 move does not make sense");
 
         Vehicle vehicleCopy = vehicle.copy();
         vehicleCopy.move(offset);
 
-        if (offset == 0) throw new Exception("0 move does not make sense");
         checkIfVehicleLeavesTheBoard(vehicle, vehicleCopy);
         checkIfVehicleCollidesWithExistingOnes(vehicle, vehicleCopy);
         vehicle.move(offset);
 
         checkIfVehicleIsInWinningState(vehicle);
+    }
+
+    private void checkIfPlayerIsAllowedToMoveVehicle(Vehicle vehicle, boolean isLeftPlayersMove) {
+        if (isLeftPlayersMove && !vehicle.isLeft() && vehicle.isHero())
+            throw new IllegalArgumentException("Player is not allowed to move this vehicle");
+        if (!isLeftPlayersMove && vehicle.isLeft() && vehicle.isHero())
+            throw new IllegalArgumentException("Player is not allowed to move this vehicle");
     }
 
     public void moveBoardPart(boolean isLeft, int offset) throws Exception {
@@ -87,17 +97,14 @@ public class Board {
     }
 
     private void checkIfVehicleIsInWinningState(Vehicle vehicleCopy) throws VictoryException {
-        //todo check
         if (!vehicleCopy.isHero()) return;
 
-        if (vehicleCopy.isLeft() && vehicleCopy.getColStart() + vehicleCopy.getLength() == TRUE_WIDTH)
+        if (vehicleCopy.isLeft() && vehicleCopy.getColEnd() == TRUE_WIDTH - 1)
             throw new VictoryException("VICTORY: Left player won!");
 
         if (!vehicleCopy.isLeft() && vehicleCopy.getColStart() == 0)
             throw new VictoryException("VICTORY: Right player won!");
     }
-
-    //todo a11
 
     private void checkIfVehicleCollidesWithExistingOnes(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
         for (Vehicle vFromBoard : vehicles) {

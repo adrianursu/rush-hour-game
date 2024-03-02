@@ -2,14 +2,27 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
+    //e.g. of input:    'a1' moves a vehicle 1 to right/down    (all vehicles are small letters)
+    //                  'b-3' moves b vehicle 3 to left/top     (all vehicles are small letters)
+    //                  'L1' moves left board 1 to down         (2 boards can be moved L and R)
+    //                  'R-2' moves right board 2 to up         (2 boards can be moved L and R)
+    //                  '-1' exits the game
+
     public static void main(String[] args) {
         Board b = getInitialState1();
         printBoard(b);
 
         Scanner scanner = new Scanner(System.in);
 
+        boolean isLeftPlayersMove = true;
+
         while (true) {
-            System.out.println("Enter move:"); //e.g. 'a2' => this will move a 2 places DOWN/RIGHT
+            if (isLeftPlayersMove) {
+                System.out.println("LEFT PLAYER MOVE: ");
+            } else {
+                System.out.println("RIGHT PLAYER MOVE: ");
+            }
+
             String input = scanner.nextLine();
 
             if ("-1".equals(input)) break;
@@ -23,10 +36,11 @@ public class Main {
                 } else if (str.equals("R")) {
                     b.moveBoardPart(false, offset);
                 } else {
-                    b.moveVehicle(str, offset);
+                    b.moveVehicle(str, offset, isLeftPlayersMove);
                 }
 
                 printBoard(b);
+                isLeftPlayersMove = !isLeftPlayersMove;
             } catch (Exception e) {
                 if (e instanceof VictoryException) {
                     System.out.println(e.getMessage());
@@ -71,9 +85,6 @@ public class Main {
         board.addVehicle(i);
         board.addVehicle(j);
 
-//        board.moveBoardPart(true, 1);
-//        board.moveBoardPart(false, 5);
-
         return board;
     }
 
@@ -81,21 +92,18 @@ public class Main {
         String[][] board = new String[Board.TRUE_HEIGHT][Board.TRUE_WIDTH];
         Arrays.stream(board).forEach(row -> Arrays.fill(row, " "));
 
-        //left part dots
         for (int i = Board.PART_MAX_OFFSET_ABS + b.getLeftPartOffset(); i < Board.PART_MAX_OFFSET_ABS + Board.PART_HEIGHT + b.getLeftPartOffset(); i++) {
             for (int j = 0; j < 5; j++) {
                 board[i][j] = ".";
             }
         }
 
-        //middle part dots
         for (int i = Board.PART_MAX_OFFSET_ABS; i < Board.PART_MAX_OFFSET_ABS + Board.PART_HEIGHT; i++) {
             for (int j = 5; j < 9; j++) {
                 board[i][j] = ".";
             }
         }
 
-        //right part dots
         for (int i = Board.PART_MAX_OFFSET_ABS + b.getRightPartOffset(); i < Board.PART_MAX_OFFSET_ABS + Board.PART_HEIGHT + b.getRightPartOffset(); i++) {
             for (int j = 9; j < 14; j++) {
                 board[i][j] = ".";
@@ -114,12 +122,20 @@ public class Main {
 
         System.out.println("_ _ _ _ _         _ _ _ _ _ ");
 
-        // Print the board
         for (String[] strings : board) {
+
+            int nrEmptyStrings = 0;
             for (int j = 0; j < Board.TRUE_WIDTH; j++) {
-                System.out.print(strings[j] + " ");
+                if (strings[j].equals(" ")) nrEmptyStrings++;
             }
-            System.out.println();
+
+            if (nrEmptyStrings != Board.TRUE_WIDTH) {
+                for (int j = 0; j < Board.TRUE_WIDTH; j++) {
+                    System.out.print(strings[j] + " ");
+                }
+
+                System.out.println();
+            }
         }
 
         System.out.println("_ _ _ _ _         _ _ _ _ _ ");
