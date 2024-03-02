@@ -38,32 +38,26 @@ public class Board {
         Vehicle vehicleCopy = vehicle.copy();
         vehicleCopy.move(offset);
 
-        try {
-            if (offset == 0) throw new Exception("0 move does not make sense");
-            checkIfVehicleLeavesTheBoard(vehicle, vehicleCopy);
-            checkIfVehicleCollidesWithExistingOnes(vehicle, vehicleCopy);
-            vehicle.move(offset);
+        if (offset == 0) throw new Exception("0 move does not make sense");
+        checkIfVehicleLeavesTheBoard(vehicle, vehicleCopy);
+        checkIfVehicleCollidesWithExistingOnes(vehicle, vehicleCopy);
+        vehicle.move(offset);
 
-            checkIfVehicleIsInWinningState(vehicleCopy);
-        } catch (Exception e) {
-            addVehicle(vehicle);
-
-            throw e;
-        }
+        checkIfVehicleIsInWinningState(vehicle);
     }
 
     public void moveBoardPart(boolean isLeft, int offset) throws Exception {
         if (offset == 0) throw new Exception("0 move does not make sense");
 
         if (isLeft) {
-            if (leftPartOffset + offset > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
+            if (Math.abs(leftPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
 
             checkIfAnyVehicleInBetweenLeftAndMiddlePart();
 
             leftPartOffset += offset;
             getLeftVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
         } else {
-            if (rightPartOffset + offset > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
+            if (Math.abs(rightPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
 
             checkIfAnyVehicleInBetweenMiddleAndRightPart();
 
@@ -102,6 +96,8 @@ public class Board {
         if (!vehicleCopy.isLeft() && vehicleCopy.getColStart() == 0)
             throw new VictoryException("VICTORY: Right player won!");
     }
+
+    //todo a11
 
     private void checkIfVehicleCollidesWithExistingOnes(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
         for (Vehicle vFromBoard : vehicles) {
@@ -163,16 +159,63 @@ public class Board {
     }
 
     private void checkIfVehicleLeavesTheBoard(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
-        //todo check for part boundaries
         if (vInCurPos.isVertical()) {
             int vCol = vInCurPos.getColStart();
 
+            int vPathStart = Integer.min(vInCurPos.getRowStart(), vInNewPos.getRowStart());
+            int vPathEnd = Integer.max(vInCurPos.getRowEnd(), vInNewPos.getRowEnd());
 
+            if (vCol < 5) {
+                int partStart = 5 + leftPartOffset;
+                int partEnd = 10 + leftPartOffset;
 
-//                throw new Exception("Vehicle leaves the board");
+                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("Vehicle leaves board");
+
+            } else if (vCol < 9) {
+                int partStart = 5;
+                int partEnd = 10;
+
+                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("Vehicle leaves board");
+
+            } else {
+                int partStart = 5 + rightPartOffset;
+                int partEnd = 10 + rightPartOffset;
+
+                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("Vehicle leaves board");
+            }
         } else {
-            if (vInNewPos.getColStart() < 0 || vInNewPos.getColEnd() > (TRUE_WIDTH - 1))
-                throw new Exception("Vehicle leaves the board");
+            int vRow = vInCurPos.getRowStart();
+
+            int vPathStart = Integer.min(vInCurPos.getColStart(), vInNewPos.getColStart());
+            int vPathEnd = Integer.max(vInCurPos.getColEnd(), vInNewPos.getColEnd());
+
+            if (vPathStart >= 0 && vPathEnd <= 4) return; //perfectly fits into left part
+            if (vPathStart >= 5 && vPathEnd <= 8) return; //perfectly fits into middle part
+            if (vPathStart >= 9 && vPathEnd <= 13) return; //perfectly fits into right part
+
+            int leftPartStartRow = 5 + leftPartOffset;
+            int leftPartEndRow = 10 + leftPartOffset;
+
+            int middlePartStartRow = 5;
+            int middlePartEndRow = 10;
+
+            int rightPartStartRow = 5 + rightPartOffset;
+            int rightPartEndRow = 10 + rightPartOffset;
+
+            if (vPathStart >= 0 && vPathEnd <= 8) { //fits between left and middle
+                if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow && vRow >= middlePartStartRow && vRow <= middlePartEndRow))
+                    throw new Exception("Vehicle leaves board");
+
+            } else if (vPathStart >= 5 && vPathEnd <= 13) { //fits between middle and right
+                if (!(vRow >= middlePartStartRow && vRow <= middlePartEndRow && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
+                    throw new Exception("Vehicle leaves board");
+
+            } else if (vPathStart >= 0 && vPathEnd <= 13) { //fits between all 3 parts
+                if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow
+                        && vRow >= middlePartStartRow && vRow <= middlePartEndRow
+                        && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
+                    throw new Exception("Vehicle leaves board");
+            } else throw new Exception("Vehicle leaves board");
         }
     }
 

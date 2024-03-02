@@ -61,15 +61,15 @@ public class Main {
         board.addVehicle(heroLeft);
         board.addVehicle(heroRight);
         board.addVehicle(a);
-//        board.addVehicle(b);
-//        board.addVehicle(c);
-//        board.addVehicle(d);
-//        board.addVehicle(e);
-//        board.addVehicle(f);
-//        board.addVehicle(g);
-//        board.addVehicle(h);
-//        board.addVehicle(i);
-//        board.addVehicle(j);
+        board.addVehicle(b);
+        board.addVehicle(c);
+        board.addVehicle(d);
+        board.addVehicle(e);
+        board.addVehicle(f);
+        board.addVehicle(g);
+        board.addVehicle(h);
+        board.addVehicle(i);
+        board.addVehicle(j);
 
 //        board.moveBoardPart(true, 1);
 //        board.moveBoardPart(false, 5);
