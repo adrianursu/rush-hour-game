@@ -14,7 +14,6 @@ public class Board {
 
     public void addVehicle(Vehicle vehicle) throws Exception {
         for (Vehicle existingVehicle: vehicles) {
-            
             //Check if there is any cars placed horizontally on the grid that interfere with the Hero Car's Row. In this case, It's impossible for that Hero Car to cross the finish line
             if (!existingVehicle.isVertical() && existingVehicle.isHero() && (existingVehicle.getRowStart() == vehicle.getRowStart()) && (!vehicle.isVertical() && !vehicle.isHero())) {
                     throw new Exception("The car with id " + vehicle.getId() + " can't be added because it's horizontally and it is in the same row as the Hero Car");
