@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -58,32 +59,13 @@ public class Main {
     //p23 in tutorial
     private static Board getInitialState1() {
         Board board = new Board();
+        Random random = new Random();
 
-        Vehicle heroLeft = new Vehicle(true, true, 2, 1 + Board.PART_MAX_OFFSET_ABS, 0, false, '>');
-        Vehicle heroRight = new Vehicle(true, false, 2, 4 + Board.PART_MAX_OFFSET_ABS, 12, false, '<');
-        Vehicle a = new Vehicle(false, false, 3, 4 + Board.PART_MAX_OFFSET_ABS, 0, false, 'a');
-        Vehicle b = new Vehicle(false, false, 3, 3 + Board.PART_MAX_OFFSET_ABS, 3, true, 'b');
-        Vehicle c = new Vehicle(false, false, 2, Board.PART_MAX_OFFSET_ABS, 4, true, 'c');
-        Vehicle d = new Vehicle(false, false, 2, 1 + Board.PART_MAX_OFFSET_ABS, 5, true, 'd');
-        Vehicle e = new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 6, true, 'e');
-        Vehicle f = new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 7, true, 'f');
-        Vehicle g = new Vehicle(false, false, 2, 3 + Board.PART_MAX_OFFSET_ABS, 8, true, 'g');
-        Vehicle h = new Vehicle(false, false, 2, 4 + Board.PART_MAX_OFFSET_ABS, 9, true, 'h');
-        Vehicle i = new Vehicle(false, false, 3, Board.PART_MAX_OFFSET_ABS, 10, true, 'i');
-        Vehicle j = new Vehicle(false, false, 3, 1 + Board.PART_MAX_OFFSET_ABS, 11, false, 'j');
-
-        board.addVehicle(heroLeft);
-        board.addVehicle(heroRight);
-        board.addVehicle(a);
-        board.addVehicle(b);
-        board.addVehicle(c);
-        board.addVehicle(d);
-        board.addVehicle(e);
-        board.addVehicle(f);
-        board.addVehicle(g);
-        board.addVehicle(h);
-        board.addVehicle(i);
-        board.addVehicle(j);
+        BoardSetups[] setups = BoardSetups.values();
+        int index = random.nextInt(setups.length);
+        BoardSetups randomSetup = setups[index];
+        
+        randomSetup.initialize(board);
 
         return board;
     }
