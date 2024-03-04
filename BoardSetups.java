@@ -129,7 +129,43 @@ public enum BoardSetups {
             board.addVehicle(new Vehicle(false, false, 3, 3 + Board.PART_MAX_OFFSET_ABS, 11, true, 'g')); // orange car on the right
             board.addVehicle(new Vehicle(false, false, 3, 0 + Board.PART_MAX_OFFSET_ABS, 12, true, 'h')); // red car on the right
         }
-    };
+    },
 
+    SETUP_9 {
+        @Override
+        public void initialize(Board board) {
+            board.addVehicle(new Vehicle(true, true, 2, 2 + Board.PART_MAX_OFFSET_ABS, 0, false, '>')); // gold hero
+            board.addVehicle(new Vehicle(true, false, 2, 3 + Board.PART_MAX_OFFSET_ABS, 12, false, '<')); // silver hero
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 2, true, 'a')); // green car on the left
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 3, true, 'b')); // white car
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 4, true, 'c')); // blue car on the left
+            board.addVehicle(new Vehicle(false, false, 3, 4 + Board.PART_MAX_OFFSET_ABS, 2, false, 'd')); // red car on the left
+            board.addVehicle(new Vehicle(false, false, 3, 2 + Board.PART_MAX_OFFSET_ABS, 5, true, 'e')); // orange car on the left
+            board.addVehicle(new Vehicle(false, false, 3, 1 + Board.PART_MAX_OFFSET_ABS, 8, true, 'f')); // red car on the right
+            board.addVehicle(new Vehicle(false, false, 3, 1 + Board.PART_MAX_OFFSET_ABS, 9, false, 'g')); // orange car on the right
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 9, true, 'h')); // yellow car
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 10, true, 'h')); // blue car on the right
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 11, true, 'h')); // green car on the right
+        }
+    },
+
+    SETUP_10 {
+        @Override
+        public void initialize(Board board) {
+            board.addVehicle(new Vehicle(true, true, 2, 2 + Board.PART_MAX_OFFSET_ABS, 0, false, '>')); // gold hero
+            board.addVehicle(new Vehicle(true, false, 2, 3 + Board.PART_MAX_OFFSET_ABS, 12, false, '<')); // silver hero
+            board.addVehicle(new Vehicle(false, false, 2, 0 + Board.PART_MAX_OFFSET_ABS, 0, true, 'a')); // green car
+            board.addVehicle(new Vehicle(false, false, 2, 4 + Board.PART_MAX_OFFSET_ABS, 0, true, 'b')); // white car on the left
+            board.addVehicle(new Vehicle(false, false, 3, 1 + Board.PART_MAX_OFFSET_ABS, 2, true, 'c')); // orange car on the left
+            board.addVehicle(new Vehicle(false, false, 3, 0 + Board.PART_MAX_OFFSET_ABS, 5, true, 'd')); // red car on the left
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 6, true, 'e')); // blue car on the left
+            board.addVehicle(new Vehicle(false, false, 2, 2 + Board.PART_MAX_OFFSET_ABS, 7, true, 'f')); // white car on the right
+            board.addVehicle(new Vehicle(false, false, 3, 3 + Board.PART_MAX_OFFSET_ABS, 8, true, 'g')); // orange car on the right
+            board.addVehicle(new Vehicle(false, false, 3, 2 + Board.PART_MAX_OFFSET_ABS, 11, true, 'h')); // red car on the right
+            board.addVehicle(new Vehicle(false, false, 2, 0 + Board.PART_MAX_OFFSET_ABS, 13, true, 'h')); // blue car on the right
+            board.addVehicle(new Vehicle(false, false, 2, 4 + Board.PART_MAX_OFFSET_ABS, 13, true, 'h')); // red car on the right
+        }
+    };
+    
     public abstract void initialize(Board board);
 }
