@@ -24,6 +24,10 @@ public class Board {
         return vehicles;
     }
 
+    public Vehicle getVehicleById(String id) {
+        return vehicles.stream().filter(v -> v.getId().equals(id)).findFirst().orElse(null);
+    }
+
     public Board() {
         this.vehicles = new ArrayList<>();
     }
@@ -74,6 +78,45 @@ public class Board {
             rightPartOffset += offset;
             getRightVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
         }
+    }
+
+    public int getNumOfBlockingVehicles(String heroId) {
+        int numOfBlockingVehicles = 0;
+        Vehicle hero = getVehicleById(heroId);
+        int heroRow = hero.getRowStart();
+        // check if any vehicle is blocking the hero
+        for (Vehicle vehicle : vehicles) {
+            if (vehicle.isVertical()) {
+                // if it's the left hero, we only care about vehicles on the right from him
+                // if it's the right hero, we only care about vehicles on the left from him 
+                if (hero.isLeft()) {
+                    if (vehicle.getColStart() < hero.getColStart()) continue;
+                } else {
+                    if (vehicle.getColStart() > hero.getColStart()) continue;
+                }
+
+                // check if the vehicle is in the same row as the hero
+                int vRowStart = vehicle.getRowStart();
+                int vRowEnd = vehicle.getRowEnd();
+                if (vRowEnd >= heroRow && heroRow >= vRowStart) {
+                    numOfBlockingVehicles++;
+                }
+
+            } else {
+                if (hero.isLeft()) {
+                    if (vehicle.getColStart() < hero.getColStart()) continue;
+                } else {
+                    if (vehicle.getColStart() > hero.getColStart()) continue;
+                }
+
+                int vRow = vehicle.getRowStart();
+
+                if (vRow == hero.getRowStart()) {
+                    numOfBlockingVehicles++;
+                }
+            }
+        }
+        return numOfBlockingVehicles;
     }
 
     private void checkIfAnyVehicleInBetweenLeftAndMiddlePart() throws Exception {
