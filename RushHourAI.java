@@ -25,6 +25,12 @@ public class RushHourAI {
     }
 
     private int numOfBlockingVehicles(Board board, boolean isMaximisingPlayer) {
-        throw new UnsupportedOperationException("Unimplemented method 'numOfBlockingVehicles'");
+        // maximising player is the left hero vehicle
+        if(isMaximisingPlayer) {
+            return board.getNumOfBlockingVehicles(">");
+        }
+        else {
+            return board.getNumOfBlockingVehicles("<");
+        }
     }
 }
