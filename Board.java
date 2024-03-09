@@ -32,33 +32,16 @@ public class Board {
         this.vehicles.add(vehicle);
     }
 
-    public void moveVehicle(String vehicleId, int offset, boolean isLeftPlayersMove) throws Exception {
-        Vehicle vehicle = vehicles.stream().filter(veh -> veh.getId().equals(vehicleId)).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + vehicleId + " not found"));
-
-        checkIfPlayerIsAllowedToMoveVehicle(vehicle, isLeftPlayersMove);
-
-        if (offset == 0) throw new Exception("0 move does not make sense");
-
+    public void moveVehicle(Vehicle vehicle, int offset) throws Exception {
         Vehicle vehicleCopy = vehicle.copy();
         vehicleCopy.move(offset);
 
         checkIfVehicleLeavesTheBoard(vehicle, vehicleCopy);
         checkIfVehicleCollidesWithExistingOnes(vehicle, vehicleCopy);
         vehicle.move(offset);
-
-        checkIfVehicleIsInWinningState(vehicle);
-    }
-
-    private void checkIfPlayerIsAllowedToMoveVehicle(Vehicle vehicle, boolean isLeftPlayersMove) {
-        if (isLeftPlayersMove && !vehicle.isLeft() && vehicle.isHero())
-            throw new IllegalArgumentException("Player is not allowed to move this vehicle");
-        if (!isLeftPlayersMove && vehicle.isLeft() && vehicle.isHero())
-            throw new IllegalArgumentException("Player is not allowed to move this vehicle");
     }
 
     public void moveBoardPart(boolean isLeft, int offset) throws Exception {
-        if (offset == 0) throw new Exception("0 move does not make sense");
-
         if (isLeft) {
             if (Math.abs(leftPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
 
@@ -94,16 +77,6 @@ public class Board {
         List<Vehicle> horizontalVOfLen3InCol7 = vehicles.stream().filter(v -> (!v.isVertical() && v.getColStart() == 7 && v.getLength() == 3)).toList();
 
         if (!horizontalVOfLen3InCol7.isEmpty()) throw new Exception("Vehicle stuck in between middle and right parts");
-    }
-
-    private void checkIfVehicleIsInWinningState(Vehicle vehicleCopy) throws VictoryException {
-        if (!vehicleCopy.isHero()) return;
-
-        if (vehicleCopy.isLeft() && vehicleCopy.getColEnd() == TRUE_WIDTH - 1)
-            throw new VictoryException("VICTORY: Left player won!");
-
-        if (!vehicleCopy.isLeft() && vehicleCopy.getColStart() == 0)
-            throw new VictoryException("VICTORY: Right player won!");
     }
 
     private void checkIfVehicleCollidesWithExistingOnes(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
@@ -218,9 +191,7 @@ public class Board {
                     throw new Exception("Vehicle leaves board");
 
             } else if (vPathStart >= 0 && vPathEnd <= 13) { //fits between all 3 parts
-                if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow
-                        && vRow >= middlePartStartRow && vRow <= middlePartEndRow
-                        && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
+                if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow && vRow >= middlePartStartRow && vRow <= middlePartEndRow && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
                     throw new Exception("Vehicle leaves board");
             } else throw new Exception("Vehicle leaves board");
         }

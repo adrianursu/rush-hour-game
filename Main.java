@@ -11,14 +11,13 @@ public class Main {
 
     public static void main(String[] args) {
         Board b = getInitialState1();
-        printBoard(b);
+        Game g = new Game(b);
+        printBoard(g.getBoard());
 
         Scanner scanner = new Scanner(System.in);
 
-        boolean isLeftPlayersMove = true;
-
         while (true) {
-            if (isLeftPlayersMove) {
+            if (Game.player(g)) {
                 System.out.println("LEFT PLAYER MOVE: ");
             } else {
                 System.out.println("RIGHT PLAYER MOVE: ");
@@ -29,27 +28,17 @@ public class Main {
             if ("-1".equals(input)) break;
 
             try {
-                String str = input.substring(0, 1);
-                int offset = Integer.parseInt(input.substring(1));
+                g = Game.result(g, input);
 
-                if (str.equals("L")) {
-                    b.moveBoardPart(true, offset);
-                } else if (str.equals("R")) {
-                    b.moveBoardPart(false, offset);
-                } else {
-                    b.moveVehicle(str, offset, isLeftPlayersMove);
-                }
+                printBoard(g.getBoard());
 
-                printBoard(b);
-                isLeftPlayersMove = !isLeftPlayersMove;
-            } catch (Exception e) {
-                if (e instanceof VictoryException) {
-                    System.out.println(e.getMessage());
-                    printBoard(b);
+                if (Game.terminalTest(g)) {
+                    System.out.println("TERMINAL STATE");
                     break;
-                } else {
-                    System.out.println("Error: " + e.getMessage());
                 }
+
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
             }
         }
 
@@ -63,8 +52,9 @@ public class Main {
 
         BoardSetups[] setups = BoardSetups.values();
         int index = random.nextInt(setups.length);
-        BoardSetups randomSetup = setups[index];
-        
+//        BoardSetups randomSetup = setups[index];
+        BoardSetups randomSetup = setups[0];
+
         randomSetup.initialize(board);
 
         return board;
