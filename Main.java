@@ -46,7 +46,7 @@ public class Main {
     }
 
     //p23 in tutorial
-    private static Board getInitialState1() {
+    public static Board getInitialState1() {
         Board board = new Board();
         Random random = new Random();
 
@@ -60,7 +60,7 @@ public class Main {
         return board;
     }
 
-    private static void printBoard(Board b) {
+    public static void printBoard(Board b) {
         String[][] board = new String[Board.TRUE_HEIGHT][Board.TRUE_WIDTH];
         Arrays.stream(board).forEach(row -> Arrays.fill(row, " "));
 

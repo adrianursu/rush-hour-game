@@ -1,14 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class Board {
-    public static final int TRUE_HEIGHT = 16; //0-15, normal pos of parts 5-10
-    public static final int TRUE_WIDTH = 14; //0-13
+    public static final int TRUE_HEIGHT = 16; //0-15, initial pos of parts 5-10. When offset is max up then pos of part is 0-5, when offset is max down then pos of part is 10-15
+    public static final int TRUE_WIDTH = 14; //0-13, left part:  0-4, middle part: 5-8, right part: 9-13
     public static final int PART_MAX_OFFSET_ABS = 5;
     public static final int PART_HEIGHT = 6;
 
-    private final List<Vehicle> vehicles;
+    private List<Vehicle> vehicles;
     private int leftPartOffset = 0;
     private int rightPartOffset = 0;
 
@@ -48,15 +47,13 @@ public class Board {
     public void moveBoardPart(boolean isLeft, int offset) throws Exception {
         if (isLeft) {
             if (Math.abs(leftPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
-
-            checkIfAnyVehicleInBetweenLeftAndMiddlePart();
+            if (isAnyVehicleInBetweenLeftAndMiddlePart()) throw new Exception("Vehicle stuck in between left and middle parts");
 
             leftPartOffset += offset;
             getLeftVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
         } else {
             if (Math.abs(rightPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
-
-            checkIfAnyVehicleInBetweenMiddleAndRightPart();
+            if (isAnyVehicleInBetweenMiddleAndRightPart()) throw new Exception("Vehicle stuck in between middle and right parts");
 
             rightPartOffset += offset;
             getRightVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
@@ -102,24 +99,24 @@ public class Board {
         return numOfBlockingVehicles;
     }
 
-    private void checkIfAnyVehicleInBetweenLeftAndMiddlePart() throws Exception {
+    public boolean isAnyVehicleInBetweenLeftAndMiddlePart() {
         List<Vehicle> horizontalVInCol4 = vehicles.stream().filter(v -> (!v.isVertical() && v.getColStart() == 4)).toList();
 
-        if (!horizontalVInCol4.isEmpty()) throw new Exception("Vehicle stuck in between left and middle parts");
+        if (!horizontalVInCol4.isEmpty()) return true;
 
         List<Vehicle> horizontalVOfLen3InCol3 = vehicles.stream().filter(v -> (!v.isVertical() && v.getColStart() == 3 && v.getLength() == 3)).toList();
 
-        if (!horizontalVOfLen3InCol3.isEmpty()) throw new Exception("Vehicle stuck in between left and middle parts");
+        return !horizontalVOfLen3InCol3.isEmpty();
     }
 
-    private void checkIfAnyVehicleInBetweenMiddleAndRightPart() throws Exception {
+    public boolean isAnyVehicleInBetweenMiddleAndRightPart() {
         List<Vehicle> horizontalVInCol8 = vehicles.stream().filter(v -> (!v.isVertical() && v.getColStart() == 8)).toList();
 
-        if (!horizontalVInCol8.isEmpty()) throw new Exception("Vehicle stuck in between middle and right parts");
+        if (!horizontalVInCol8.isEmpty()) return true;
 
         List<Vehicle> horizontalVOfLen3InCol7 = vehicles.stream().filter(v -> (!v.isVertical() && v.getColStart() == 7 && v.getLength() == 3)).toList();
 
-        if (!horizontalVOfLen3InCol7.isEmpty()) throw new Exception("Vehicle stuck in between middle and right parts");
+        return !horizontalVOfLen3InCol7.isEmpty();
     }
 
     private void checkIfVehicleCollidesWithExistingOnes(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
@@ -246,5 +243,13 @@ public class Board {
 
     private List<Vehicle> getRightVehicles() {
         return vehicles.stream().filter(veh -> veh.getColStart() > 8).toList();
+    }
+
+    public Board copy() {
+        Board board = new Board();
+        board.vehicles = vehicles.stream().map(Vehicle::copy).toList();
+        board.leftPartOffset = leftPartOffset;
+        board.rightPartOffset = rightPartOffset;
+        return board;
     }
 }

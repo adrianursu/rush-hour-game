@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -28,7 +29,13 @@ public class Game {
     }
 
     public static List<String> actions(Game game) {
-        return new ArrayList<>(); //todo impl
+        List<String> actions = new ArrayList<>();
+
+        actions.addAll(getActionForLeftPart(game));
+        actions.addAll(getActionForRightPart(game));
+        actions.addAll(getActionForVehicles(game));
+
+        return actions;
     }
 
     public static Game result(Game game, String action) throws Exception {
@@ -73,5 +80,74 @@ public class Game {
 
     private void checkIfMoveIsNotZero(int offset) throws Exception {
         if (offset == 0) throw new Exception("0 move does not make sense");
+    }
+
+    private static List<String> getActionForLeftPart(Game game) {
+        List<String> actions = new ArrayList<>();
+        List<Integer> potentialLeftPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+        for (int action : potentialLeftPartMoves) {
+            try {
+                Board bCopy = game.getBoard().copy();
+                bCopy.moveBoardPart(true, action);
+                actions.add("L" + action);
+            } catch (Exception ignored) {
+            }
+        }
+
+        return actions;
+    }
+
+    private static List<String> getActionForRightPart(Game game) {
+        List<String> actions = new ArrayList<>();
+        List<Integer> potentialRightPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+        for (int action : potentialRightPartMoves) {
+            try {
+                Board bCopy = game.getBoard().copy();
+                bCopy.moveBoardPart(false, action);
+                actions.add("R" + action);
+            } catch (Exception ignored) {
+            }
+        }
+
+        return actions;
+    }
+
+    private static List<String> getActionForVehicles(Game game) {
+        List<String> actions = new ArrayList<>();
+        List<Integer> potentialMovesForVerticalVehicles = new ArrayList<>(Arrays.asList(-4, -3, -2, -1, 1, 2, 3, 4));
+        List<Integer> potentialMovesForHorizontalVehicles = new ArrayList<>(Arrays.asList(-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+
+
+        for (Vehicle vehicle : game.getBoard().getVehicles()) {
+            if (vehicle.isVertical()) {
+                for (int action : potentialMovesForVerticalVehicles) {
+                    try {
+                        Board bCopy = game.getBoard().copy();
+                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + vehicle.getId() + " not found"));
+                        bCopy.moveVehicle(vCopy, action);
+                        actions.add(vehicle.getId() + action);
+                    } catch (Exception ignored) {
+                    }
+                }
+            } else {
+                if (game.isLeftPlayerMove() && vehicle.isHero() && !vehicle.isLeft()) continue;
+
+                if (!game.isLeftPlayerMove() && vehicle.isHero() && vehicle.isLeft()) continue;
+
+                for (int action : potentialMovesForHorizontalVehicles) {
+                    try {
+                        Board bCopy = game.getBoard().copy();
+                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + vehicle.getId() + " not found"));
+                        bCopy.moveVehicle(vCopy, action);
+                        actions.add(vehicle.getId() + action);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+
+        return actions;
     }
 }
