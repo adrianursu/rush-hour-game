@@ -26,7 +26,7 @@ public class Minimax {
                 try {
                     Game newGame = game.copy();
                     Game.result(newGame, move);
-                    int score = minimax(newGame, depth - 1, false);
+                    int score = minimax(newGame, depth - 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
                     if (score > bestScore) {
                         bestScore = score;
                         bestMove = move;
@@ -41,7 +41,7 @@ public class Minimax {
                 try {
                     Game newGame = game.copy();
                     Game.result(newGame, move);
-                    int score = minimax(newGame, depth - 1, true);
+                    int score = minimax(newGame, depth - 1, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
                     if (score < bestScore) {
                         bestScore = score;
                         bestMove = move;
@@ -55,7 +55,7 @@ public class Minimax {
         return bestMove;
     }
 
-    public static int minimax(Game game, int depth, boolean isMaximisingPlayer) {
+    public static int minimax(Game game, int depth, boolean isMaximisingPlayer, int alpha, int beta) {
         if (depth == 0 || Game.terminalTest(game)) {
             RushHourAI ai = new RushHourAI();
             return ai.evaluate(game.getBoard(), game.isLeftPlayerMove());
@@ -69,8 +69,14 @@ public class Minimax {
                 try {
                     Game newGame = game.copy();
                     Game.result(newGame, move);
-                    int score = minimax(newGame, depth - 1, false);
+                    int score = minimax(newGame, depth - 1, false, alpha, beta);
                     bestScore = Math.max(bestScore, score);
+
+                    alpha = Math.max(alpha, bestScore); // Update alpha
+                    if (beta <= alpha) { //Beta cut-off
+                        break;
+                    }
+
                 } catch (Exception e) {
                     // Handle the situation where the move is not valid (for example, catching the exception thrown by Game.result)
                 }
@@ -81,8 +87,14 @@ public class Minimax {
                 try {
                     Game newGame = game.copy();
                     Game.result(newGame, move);
-                    int score = minimax(newGame, depth - 1, true);
+                    int score = minimax(newGame, depth - 1, true, alpha, beta);
                     bestScore = Math.min(bestScore, score);
+
+                    beta = Math.min(beta, bestScore); // Update beta
+                    if (beta <= alpha) { // Alpha cut-off 
+                        break;
+                    }
+
                 } catch (Exception e) {
                     // Handle the situation where the move is not valid (for example, catching the exception thrown by Game.result)
                 }

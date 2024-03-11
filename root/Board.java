@@ -47,6 +47,10 @@ public class Board {
         vehicle.move(offset);
     }
 
+    public int getTrueWidth() {
+    return TRUE_WIDTH;
+}
+
     public void moveBoardPart(boolean isLeft, int offset) throws Exception {
         if (isLeft) {
             if (Math.abs(leftPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
@@ -259,6 +263,8 @@ public class Board {
     }
 
     public static void printBoard(Board b) {
+
+        
         String[][] board = new String[Board.TRUE_HEIGHT][Board.TRUE_WIDTH];
         Arrays.stream(board).forEach(row -> Arrays.fill(row, " "));
 
@@ -311,5 +317,14 @@ public class Board {
         System.out.println("_ _ _ _ _         _ _ _ _ _ ");
         System.out.println();
     }
+
+    public Vehicle getHeroVehicle(boolean isMaximisingPlayer) {
+    for (Vehicle v : this.getVehicles()) {
+        if (v.isHero() && ((isMaximisingPlayer && v.isLeft()) || (!isMaximisingPlayer && !v.isLeft()))) {
+            return v;
+        }
+    }
+    return null; // Or throw an exception if the hero vehicle must exist.
+}
 
 }
