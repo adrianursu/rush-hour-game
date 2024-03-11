@@ -152,4 +152,13 @@ public class Game {
 
         return actions;
     }
+    
+    public Game copy() {
+        Board newBoard = this.board.copy();
+        Game newGame = new Game(newBoard);
+        newGame.setLeftPlayerMove(this.isLeftPlayerMove());
+        
+        return newGame;
+    }
 }
+    
