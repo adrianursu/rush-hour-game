@@ -1,3 +1,5 @@
+package root;
+
 public class RushHourAI {
     
     public int evaluate(Board board, boolean isMaximisingPlayer){

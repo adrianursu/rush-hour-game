@@ -1,3 +1,5 @@
+package root;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +51,7 @@ public class Game {
             game.checkIfMoveIsNotZero(offset);
             game.getBoard().moveBoardPart(false, offset);
         } else {
-            Vehicle vehicle = game.getBoard().getVehicles().stream().filter(veh -> veh.getId().equals(str)).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + str + " not found"));
+            Vehicle vehicle = game.getBoard().getVehicles().stream().filter(veh -> veh.getId().equals(str)).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + str + " not found"));
             game.checkIfPlayerIsAllowedToMoveVehicle(vehicle);
             game.checkIfMoveIsNotZero(offset);
             game.getBoard().moveVehicle(vehicle, offset);
@@ -125,7 +127,7 @@ public class Game {
                 for (int action : potentialMovesForVerticalVehicles) {
                     try {
                         Board bCopy = game.getBoard().copy();
-                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + vehicle.getId() + " not found"));
+                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + vehicle.getId() + " not found"));
                         bCopy.moveVehicle(vCopy, action);
                         actions.add(vehicle.getId() + action);
                     } catch (Exception ignored) {
@@ -139,7 +141,7 @@ public class Game {
                 for (int action : potentialMovesForHorizontalVehicles) {
                     try {
                         Board bCopy = game.getBoard().copy();
-                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("Vehicle with Id " + vehicle.getId() + " not found"));
+                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + vehicle.getId() + " not found"));
                         bCopy.moveVehicle(vCopy, action);
                         actions.add(vehicle.getId() + action);
                     } catch (Exception ignored) {

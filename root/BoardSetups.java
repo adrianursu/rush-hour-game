@@ -1,3 +1,5 @@
+package root;
+
 public enum BoardSetups {
     SETUP_1 {
         @Override

@@ -1,3 +1,5 @@
+package root;
+
 public class Vehicle {
     private final boolean isHero;
     private final boolean isLeft; //this only matters if isHero
