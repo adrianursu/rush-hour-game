@@ -42,8 +42,9 @@ public class Board {
         Vehicle vehicleCopy = vehicle.copy();
         vehicleCopy.move(offset);
 
-        checkIfVehicleLeavesTheBoard(vehicle, vehicleCopy);
-        checkIfVehicleCollidesWithExistingOnes(vehicle, vehicleCopy);
+        if (isVehicleLeavesTheBoard(vehicle, vehicleCopy)) throw new Exception("Vehicle leaves the board");
+        if (isVehicleCollidesWithOtherVehicles(vehicle, vehicleCopy))
+            throw new Exception("Vehicle collides with other vehicles");
         vehicle.move(offset);
     }
 
@@ -142,7 +143,7 @@ public class Board {
         return !horizontalVOfLen3InCol7.isEmpty();
     }
 
-    private void checkIfVehicleCollidesWithExistingOnes(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
+    public boolean isVehicleCollidesWithOtherVehicles(Vehicle vInCurPos, Vehicle vInNewPos) {
         for (Vehicle vFromBoard : vehicles) {
             if (vFromBoard.getId().equals(vInCurPos.getId())) continue;
 
@@ -156,7 +157,7 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getRowEnd(), vInNewPos.getRowEnd());
 
                 if (vFromBoardEnd >= vStart && vEnd >= vFromBoardStart)
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
 
             } else if (!vFromBoard.isVertical() && !vInCurPos.isVertical()) {
                 if (vFromBoard.getRowStart() != vInCurPos.getRowStart()) continue;
@@ -168,7 +169,7 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getColEnd(), vInNewPos.getColEnd());
 
                 if (vFromBoardEnd >= vStart && vEnd >= vFromBoardStart)
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
 
             } else if (vFromBoard.isVertical() && !vInCurPos.isVertical()) {
                 int vFromBoardStart = vFromBoard.getRowStart();
@@ -182,7 +183,7 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getColEnd(), vInNewPos.getColEnd());
 
                 if (!(vFromBoardCol < vStart || vFromBoardCol > vEnd))
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
 
             } else if (!vFromBoard.isVertical() && vInCurPos.isVertical()) {
                 int vFromBoardStart = vFromBoard.getColStart();
@@ -196,12 +197,14 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getRowEnd(), vInNewPos.getRowEnd());
 
                 if (!(vFromBoardRow < vStart || vFromBoardRow > vEnd))
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
             }
         }
+
+        return false;
     }
 
-    private void checkIfVehicleLeavesTheBoard(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
+    public boolean isVehicleLeavesTheBoard(Vehicle vInCurPos, Vehicle vInNewPos) {
         if (vInCurPos.isVertical()) {
             int vCol = vInCurPos.getColStart();
 
@@ -212,19 +215,19 @@ public class Board {
                 int partStart = 5 + leftPartOffset;
                 int partEnd = 10 + leftPartOffset;
 
-                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("root.Vehicle leaves board");
+                if (vPathStart < partStart || vPathEnd > partEnd) return true;
 
             } else if (vCol < 9) {
                 int partStart = 5;
                 int partEnd = 10;
 
-                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("root.Vehicle leaves board");
+                if (vPathStart < partStart || vPathEnd > partEnd) return true;
 
             } else {
                 int partStart = 5 + rightPartOffset;
                 int partEnd = 10 + rightPartOffset;
 
-                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("root.Vehicle leaves board");
+                if (vPathStart < partStart || vPathEnd > partEnd) return true;
             }
         } else {
             int vRow = vInCurPos.getRowStart();
@@ -232,9 +235,9 @@ public class Board {
             int vPathStart = Integer.min(vInCurPos.getColStart(), vInNewPos.getColStart());
             int vPathEnd = Integer.max(vInCurPos.getColEnd(), vInNewPos.getColEnd());
 
-            if (vPathStart >= 0 && vPathEnd <= 4) return; //perfectly fits into left part
-            if (vPathStart >= 5 && vPathEnd <= 8) return; //perfectly fits into middle part
-            if (vPathStart >= 9 && vPathEnd <= 13) return; //perfectly fits into right part
+            if (vPathStart >= 0 && vPathEnd <= 4) return false; //perfectly fits into left part
+            if (vPathStart >= 5 && vPathEnd <= 8) return false; //perfectly fits into middle part
+            if (vPathStart >= 9 && vPathEnd <= 13) return false; //perfectly fits into right part
 
             int leftPartStartRow = 5 + leftPartOffset;
             int leftPartEndRow = 10 + leftPartOffset;
@@ -247,17 +250,19 @@ public class Board {
 
             if (vPathStart >= 0 && vPathEnd <= 8) { //fits between left and middle
                 if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow && vRow >= middlePartStartRow && vRow <= middlePartEndRow))
-                    throw new Exception("root.Vehicle leaves board");
+                    return true;
 
             } else if (vPathStart >= 5 && vPathEnd <= 13) { //fits between middle and right
                 if (!(vRow >= middlePartStartRow && vRow <= middlePartEndRow && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
-                    throw new Exception("root.Vehicle leaves board");
+                    return true;
 
             } else if (vPathStart >= 0 && vPathEnd <= 13) { //fits between all 3 parts
                 if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow && vRow >= middlePartStartRow && vRow <= middlePartEndRow && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
-                    throw new Exception("root.Vehicle leaves board");
-            } else throw new Exception("root.Vehicle leaves board");
+                    return true;
+            } else return true;
         }
+
+        return false;
     }
 
     private List<Vehicle> getLeftVehicles() {

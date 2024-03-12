@@ -31,8 +31,6 @@ public class Game {
     }
 
     public static List<String> actions(Game game) {
-
-        //todo optimize this shit
         List<String> actions = new ArrayList<>(getActionForVehicles(game));
 
         List<Integer> possibleLeftMovementsOffsets = game.getBoard().getPossibleOffsetsForLeftPartMovement();
@@ -116,16 +114,15 @@ public class Game {
         List<Integer> potentialMovesForVerticalVehicles = new ArrayList<>(Arrays.asList(-4, -3, -2, -1, 1, 2, 3, 4));
         List<Integer> potentialMovesForHorizontalVehicles = new ArrayList<>(Arrays.asList(-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 
-
         for (Vehicle vehicle : game.getBoard().getVehicles()) {
             if (vehicle.isVertical()) {
                 for (int action : potentialMovesForVerticalVehicles) {
-                    try {
-                        Board bCopy = game.getBoard().copy();
-                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + vehicle.getId() + " not found"));
-                        bCopy.moveVehicle(vCopy, action);
+                    Board b = game.getBoard();
+                    Vehicle vCopy = vehicle.copy();
+                    vCopy.move(action);
+
+                    if (!b.isVehicleLeavesTheBoard(vehicle, vCopy) && !b.isVehicleCollidesWithOtherVehicles(vehicle, vCopy)) {
                         actions.add(vehicle.getId() + action);
-                    } catch (Exception ignored) {
                     }
                 }
             } else {
@@ -133,13 +130,15 @@ public class Game {
 
                 if (!game.isLeftPlayerMove() && vehicle.isHero() && vehicle.isLeft()) continue;
 
-                for (int action : potentialMovesForHorizontalVehicles) {
-                    try {
-                        Board bCopy = game.getBoard().copy();
-                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + vehicle.getId() + " not found"));
-                        bCopy.moveVehicle(vCopy, action);
+                List<Integer> filteredPotentialMoves = potentialMovesForHorizontalVehicles.stream().filter(m -> ((vehicle.getColStart() + m) >= 0 && (vehicle.getColEnd() + m) <= 13)).toList();
+
+                for (int action : filteredPotentialMoves) {
+                    Board b = game.getBoard().copy();
+                    Vehicle vCopy = vehicle.copy();
+                    vCopy.move(action);
+
+                    if (!b.isVehicleLeavesTheBoard(vehicle, vCopy) && !b.isVehicleCollidesWithOtherVehicles(vehicle, vCopy)) {
                         actions.add(vehicle.getId() + action);
-                    } catch (Exception ignored) {
                     }
                 }
             }

@@ -39,7 +39,7 @@ class MonteCarloTreeSearchTest {
         Node root = new Node(game);
         MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(root);
 
-        Node best = mcts.search(10);
+        Node best = mcts.search(666);
 
         root.printTree();
 

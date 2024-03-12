@@ -2,6 +2,8 @@ package root;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +50,7 @@ class GameTest {
         game = Game.result(game, "c2"); //l
         game = Game.result(game, "d1"); //r
         game = Game.result(game, ">4"); //l
+        game = Game.result(game, "<-1"); //r
         Board.printBoard(game.getBoard());
 
         List<String> actions = Game.actions(game);
@@ -70,5 +73,17 @@ class GameTest {
         List<String> actions = Game.actions(game);
 
         System.out.println();
+    }
+
+    @Test
+    void otherTest() {
+        List<Integer> potentialLeftPartMoves = new ArrayList<>(Arrays.asList(-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+
+        int kek = 0;
+
+        List<Integer> test = potentialLeftPartMoves.stream().filter(m -> ((kek + m) >= 0 && (kek + 1 + m) <= 13)).toList();
+
+        System.out.println();
+
     }
 }
