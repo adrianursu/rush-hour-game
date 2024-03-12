@@ -101,35 +101,25 @@ public class Game {
     }
 
     private static List<String> getActionForLeftPart(Game game) {
-        List<String> actions = new ArrayList<>();
+        if (game.getBoard().isAnyVehicleInBetweenLeftAndMiddlePart()) return new ArrayList<>();
+
         List<Integer> potentialLeftPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
-        for (int action : potentialLeftPartMoves) {
-            try {
-                Board bCopy = game.getBoard().copy();
-                bCopy.moveBoardPart(true, action);
-                actions.add("L" + action);
-            } catch (Exception ignored) {
-            }
-        }
+        int leftPartOffset = game.getBoard().getLeftPartOffset();
+        List<Integer> filteredListOfMoves = potentialLeftPartMoves.stream().filter(m -> Math.abs(leftPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
 
-        return actions;
+        return filteredListOfMoves.stream().map(n -> "L" + n).toList();
     }
 
     private static List<String> getActionForRightPart(Game game) {
-        List<String> actions = new ArrayList<>();
+        if (game.getBoard().isAnyVehicleInBetweenMiddleAndRightPart()) return new ArrayList<>();
+
         List<Integer> potentialRightPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 
-        for (int action : potentialRightPartMoves) {
-            try {
-                Board bCopy = game.getBoard().copy();
-                bCopy.moveBoardPart(false, action);
-                actions.add("R" + action);
-            } catch (Exception ignored) {
-            }
-        }
+        int rightPartOffset = game.getBoard().getRightPartOffset();
+        List<Integer> filteredListOfMoves = potentialRightPartMoves.stream().filter(m -> Math.abs(rightPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
 
-        return actions;
+        return filteredListOfMoves.stream().map(n -> "R" + n).toList();
     }
 
     public Game copy() {
