@@ -31,11 +31,13 @@ public class Game {
     }
 
     public static List<String> actions(Game game) {
-        List<String> actions = new ArrayList<>();
+        List<String> actions = new ArrayList<>(getActionForVehicles(game));
 
-        actions.addAll(getActionForVehicles(game));
-        actions.addAll(getActionForLeftPart(game));
-        actions.addAll(getActionForRightPart(game));
+        List<Integer> possibleLeftMovementsOffsets = game.getBoard().getPossibleOffsetsForLeftPartMovement();
+        actions.addAll(possibleLeftMovementsOffsets.stream().map(e -> "L" + e).toList());
+
+        List<Integer> possibleRightMovementsOffsets = game.getBoard().getPossibleOffsetsForRightPartMovement();
+        actions.addAll(possibleRightMovementsOffsets.stream().map(e -> "R" + e).toList());
 
         return actions;
     }
@@ -46,10 +48,10 @@ public class Game {
 
         if (str.equals("L")) {
             game.checkIfMoveIsNotZero(offset);
-            game.getBoard().moveBoardPart(true, offset);
+            game.getBoard().moveLeftPart(offset);
         } else if (str.equals("R")) {
             game.checkIfMoveIsNotZero(offset);
-            game.getBoard().moveBoardPart(false, offset);
+            game.getBoard().moveRightPart(offset);
         } else {
             Vehicle vehicle = game.getBoard().getVehicles().stream().filter(veh -> veh.getId().equals(str)).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + str + " not found"));
             game.checkIfPlayerIsAllowedToMoveVehicle(vehicle);
@@ -70,7 +72,22 @@ public class Game {
     }
 
     public static int utility(Game game, boolean isLeftPlayer) {
-        return -1; //todo impl
+        if (!terminalTest(game)) throw new IllegalArgumentException("Game is not terminal");
+
+        Vehicle leftHero = game.getBoard().getVehicles().stream().filter(veh -> veh.isHero() && veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Left hero not found"));
+        boolean leftPlayerWon = leftHero.getColEnd() == Board.TRUE_WIDTH - 1;
+
+        if (isLeftPlayer && leftPlayerWon) {
+            return 1;
+        } else if (isLeftPlayer && !leftPlayerWon) {
+            return 0;
+        } else if (!isLeftPlayer && leftPlayerWon) {
+            return 0;
+        } else if (!isLeftPlayer && !leftPlayerWon) {
+            return 1;
+        }
+
+        return -1;
     }
 
     private void checkIfPlayerIsAllowedToMoveVehicle(Vehicle vehicle) throws Exception {
@@ -84,36 +101,12 @@ public class Game {
         if (offset == 0) throw new Exception("0 move does not make sense");
     }
 
-    private static List<String> getActionForLeftPart(Game game) {
-        List<String> actions = new ArrayList<>();
-        List<Integer> potentialLeftPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    public Game copy() {
+        Board newBoard = this.board.copy();
+        Game newGame = new Game(newBoard);
+        newGame.setLeftPlayerMove(this.isLeftPlayerMove());
 
-        for (int action : potentialLeftPartMoves) {
-            try {
-                Board bCopy = game.getBoard().copy();
-                bCopy.moveBoardPart(true, action);
-                actions.add("L" + action);
-            } catch (Exception ignored) {
-            }
-        }
-
-        return actions;
-    }
-
-    private static List<String> getActionForRightPart(Game game) {
-        List<String> actions = new ArrayList<>();
-        List<Integer> potentialRightPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-
-        for (int action : potentialRightPartMoves) {
-            try {
-                Board bCopy = game.getBoard().copy();
-                bCopy.moveBoardPart(false, action);
-                actions.add("R" + action);
-            } catch (Exception ignored) {
-            }
-        }
-
-        return actions;
+        return newGame;
     }
 
     private static List<String> getActionForVehicles(Game game) {
@@ -121,16 +114,15 @@ public class Game {
         List<Integer> potentialMovesForVerticalVehicles = new ArrayList<>(Arrays.asList(-4, -3, -2, -1, 1, 2, 3, 4));
         List<Integer> potentialMovesForHorizontalVehicles = new ArrayList<>(Arrays.asList(-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 
-
         for (Vehicle vehicle : game.getBoard().getVehicles()) {
             if (vehicle.isVertical()) {
                 for (int action : potentialMovesForVerticalVehicles) {
-                    try {
-                        Board bCopy = game.getBoard().copy();
-                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + vehicle.getId() + " not found"));
-                        bCopy.moveVehicle(vCopy, action);
+                    Board b = game.getBoard();
+                    Vehicle vCopy = vehicle.copy();
+                    vCopy.move(action);
+
+                    if (!b.isVehicleLeavesTheBoard(vehicle, vCopy) && !b.isVehicleCollidesWithOtherVehicles(vehicle, vCopy)) {
                         actions.add(vehicle.getId() + action);
-                    } catch (Exception ignored) {
                     }
                 }
             } else {
@@ -138,13 +130,15 @@ public class Game {
 
                 if (!game.isLeftPlayerMove() && vehicle.isHero() && vehicle.isLeft()) continue;
 
-                for (int action : potentialMovesForHorizontalVehicles) {
-                    try {
-                        Board bCopy = game.getBoard().copy();
-                        Vehicle vCopy = bCopy.getVehicles().stream().filter(veh -> veh.getId().equals(vehicle.getId())).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + vehicle.getId() + " not found"));
-                        bCopy.moveVehicle(vCopy, action);
+                List<Integer> filteredPotentialMoves = potentialMovesForHorizontalVehicles.stream().filter(m -> ((vehicle.getColStart() + m) >= 0 && (vehicle.getColEnd() + m) <= 13)).toList();
+
+                for (int action : filteredPotentialMoves) {
+                    Board b = game.getBoard().copy();
+                    Vehicle vCopy = vehicle.copy();
+                    vCopy.move(action);
+
+                    if (!b.isVehicleLeavesTheBoard(vehicle, vCopy) && !b.isVehicleCollidesWithOtherVehicles(vehicle, vCopy)) {
                         actions.add(vehicle.getId() + action);
-                    } catch (Exception ignored) {
                     }
                 }
             }
@@ -152,13 +146,4 @@ public class Game {
 
         return actions;
     }
-    
-    public Game copy() {
-        Board newBoard = this.board.copy();
-        Game newGame = new Game(newBoard);
-        newGame.setLeftPlayerMove(this.isLeftPlayerMove());
-        
-        return newGame;
-    }
 }
-    
