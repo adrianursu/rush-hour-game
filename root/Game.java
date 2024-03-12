@@ -33,9 +33,10 @@ public class Game {
     public static List<String> actions(Game game) {
         List<String> actions = new ArrayList<>();
 
+        //todo optimize this shit
+        actions.addAll(getActionForVehicles(game));
         actions.addAll(getActionForLeftPart(game));
         actions.addAll(getActionForRightPart(game));
-        actions.addAll(getActionForVehicles(game));
 
         return actions;
     }
@@ -70,7 +71,22 @@ public class Game {
     }
 
     public static int utility(Game game, boolean isLeftPlayer) {
-        return -1; //todo impl
+        if (!terminalTest(game)) throw new IllegalArgumentException("Game is not terminal");
+
+        Vehicle leftHero = game.getBoard().getVehicles().stream().filter(veh -> veh.isHero() && veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Left hero not found"));
+        boolean leftPlayerWon = leftHero.getColEnd() == Board.TRUE_WIDTH - 1;
+
+        if (isLeftPlayer && leftPlayerWon) {
+            return 1;
+        } else if (isLeftPlayer && !leftPlayerWon) {
+            return 0;
+        } else if (!isLeftPlayer && leftPlayerWon) {
+            return 0;
+        } else if (!isLeftPlayer && !leftPlayerWon) {
+            return 1;
+        }
+
+        return -1;
     }
 
     private void checkIfPlayerIsAllowedToMoveVehicle(Vehicle vehicle) throws Exception {
@@ -114,6 +130,14 @@ public class Game {
         }
 
         return actions;
+    }
+
+    public Game copy() {
+        Board newBoard = this.board.copy();
+        Game newGame = new Game(newBoard);
+        newGame.setLeftPlayerMove(this.isLeftPlayerMove());
+
+        return newGame;
     }
 
     private static List<String> getActionForVehicles(Game game) {
