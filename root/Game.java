@@ -33,9 +33,9 @@ public class Game {
     public static List<String> actions(Game game) {
         List<String> actions = new ArrayList<>();
 
+        actions.addAll(getActionForVehicles(game));
         actions.addAll(getActionForLeftPart(game));
         actions.addAll(getActionForRightPart(game));
-        actions.addAll(getActionForVehicles(game));
 
         return actions;
     }
