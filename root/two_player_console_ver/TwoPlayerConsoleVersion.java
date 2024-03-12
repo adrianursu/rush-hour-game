@@ -10,11 +10,12 @@ public class TwoPlayerConsoleVersion {
         Board.printBoard(game.getBoard());
 
         Scanner scanner = new Scanner(System.in);
+        boolean currentPlayer;
 
         while (!Game.terminalTest(game)) {
-
-            System.out.println("Current player (true for left, false for right): " + Game.player(game));
-            if (Game.player(game)) {
+            currentPlayer = Game.player(game);
+            System.out.println("Current player : " + (currentPlayer? "left":"right"));
+            if (currentPlayer) {
                 // Left player (human) move
                 System.out.println("LEFT PLAYER MOVE: ");
                 String input = scanner.nextLine();
@@ -32,8 +33,8 @@ public class TwoPlayerConsoleVersion {
             } else {
                 // Right player (AI) move
                 System.out.println("RIGHT PLAYER MOVE (AI): ");
-            // Adding a log to confirm we reach this point.
-            System.out.println("Preparing to find the best move for AI...");
+                // Adding a log to confirm we reach this point.
+                System.out.println("Preparing to find the best move for AI...");
 
                 String bestMove = Minimax.findBestMove(game, Minimax.MAX_DEPTH, false);
                 if (bestMove != null) {
@@ -45,8 +46,8 @@ public class TwoPlayerConsoleVersion {
                     } catch (Exception e) {
                         System.out.println("==== ERROR WITH AI MOVE ====");
 
-            System.out.println("Error with AI move: " + e.getMessage());
-            // Handle AI move error, possibly by choosing a different move
+                    System.out.println("Error with AI move: " + e.getMessage());
+                    // Handle AI move error, possibly by choosing a different move
                     }
                 } else {
                     System.out.println("AI has no valid moves.");
@@ -55,7 +56,7 @@ public class TwoPlayerConsoleVersion {
             }
 
 
-                    System.out.println("Player after move (true for left, false for right): " + Game.player(game));
+            System.out.println("Player after move: " + (currentPlayer? "left":"right"));
             Board.printBoard(game.getBoard());
 
             if (Game.terminalTest(game)) {

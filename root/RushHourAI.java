@@ -18,51 +18,51 @@ public class RushHourAI {
         }
 
         // Evaluate the distance to the goal for both players.
-        int aiDistanceToGoal = distanceToGoal(board, true);
-        int humanDistanceToGoal = distanceToGoal(board, false);
+        int aiDistanceToGoal = distanceToGoal(board, false);
+        int humanDistanceToGoal = distanceToGoal(board, true);
 
         // Count the number of blocking vehicles for both players.
-        int aiBlockingVehicles = numOfBlockingVehicles(board, true);
-        int humanBlockingVehicles = numOfBlockingVehicles(board, false);
+        int aiBlockingVehicles = numOfBlockingVehicles(board, false);
+        int humanBlockingVehicles = numOfBlockingVehicles(board, true);
 
         // The scoring formula could be adjusted based on testing to see what provides the best behavior.
         int score = aiDistanceToGoal - humanDistanceToGoal + (humanBlockingVehicles - aiBlockingVehicles) * BLOCKING_VEHICLE_MULTIPLIER;
 
         return isMaximisingPlayer ? score : -score; // If we are minimising, invert the score.
     }
-
+    // TODO: change the condition to check if any of the heros passed the board -> they need to be outside of the board in order to win
     private boolean hasWon(Board board, boolean isMaximisingPlayer) {
         // Return true if the maximising player's hero vehicle has reached the goal.
         // Assuming that reaching the goal means getting to the left edge for AI and right edge for the human.
         Vehicle heroVehicle = board.getHeroVehicle(isMaximisingPlayer);
-        return isMaximisingPlayer ? heroVehicle.getColStart() == 0 : heroVehicle.getColEnd() == board.getTrueWidth() - 1;
+        return isMaximisingPlayer ? heroVehicle.getColEnd() == Board.TRUE_WIDTH - 1 : heroVehicle.getColStart() == 0;
     }
 
     private int distanceToGoal(Board board, boolean isMaximisingPlayer) {
         // Calculate the distance of the hero vehicle to the goal.
         // Assuming that for AI the goal is to reach the left edge (column 0) and for the human is the right edge (last column).
         Vehicle heroVehicle = board.getHeroVehicle(isMaximisingPlayer);
-        return isMaximisingPlayer ? heroVehicle.getColStart() : board.getTrueWidth() - 1 - heroVehicle.getColEnd();
+        return isMaximisingPlayer ? Board.TRUE_WIDTH - 1 - heroVehicle.getColEnd() : heroVehicle.getColStart();
     }
 
     private int numOfBlockingVehicles(Board board, boolean isMaximisingPlayer) {
-    Vehicle hero = board.getHeroVehicle(isMaximisingPlayer);
-    int blockingCount = 0;
+        Vehicle hero = board.getHeroVehicle(isMaximisingPlayer);
+        int blockingCount = 0;
 
-    // Assuming vertical movement is up and down, and horizontal is left and right.
-    for (Vehicle v : board.getVehicles()) {
-        if (isMaximisingPlayer) {
-            // For the AI, we're assuming the goal is on the left, so we check vehicles on the left of the hero.
-            if (!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColEnd() < hero.getColStart()) {
-                blockingCount++;
-            }
-        } else {
-            // For the human, assuming the goal is on the right, we check vehicles on the right of the hero.
-            if (!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColStart() > hero.getColEnd()) {
-                blockingCount++;
+        // Assuming vertical movement is up and down, and horizontal is left and right.
+        for (Vehicle v : board.getVehicles()) {
+            if (isMaximisingPlayer) {
+                // For the AI, we're assuming the goal is on the left, so we check vehicles on the left of the hero.
+                if (!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColEnd() < hero.getColStart()) {
+                    blockingCount++;
+                }
+            } else {
+                // For the human, assuming the goal is on the right, we check vehicles on the right of the hero.
+                if (!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColStart() > hero.getColEnd()) {
+                    blockingCount++;
+                }
             }
         }
+        return blockingCount;
     }
-    return blockingCount;
-}
 }

@@ -47,10 +47,6 @@ public class Board {
         vehicle.move(offset);
     }
 
-    public int getTrueWidth() {
-    return TRUE_WIDTH;
-}
-
     public void moveBoardPart(boolean isLeft, int offset) throws Exception {
         if (isLeft) {
             if (Math.abs(leftPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");

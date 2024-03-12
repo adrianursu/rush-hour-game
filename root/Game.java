@@ -61,7 +61,7 @@ public class Game {
 
         return game;
     }
-
+    // TODO: change the condition to check if any of the heros passed the board -> they need to be outside of the board in order to win
     public static boolean terminalTest(Game game) {
         Vehicle leftHero = game.getBoard().getVehicles().stream().filter(veh -> veh.isHero() && veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Left hero not found"));
         Vehicle rightHero = game.getBoard().getVehicles().stream().filter(veh -> veh.isHero() && !veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Right hero not found"));
