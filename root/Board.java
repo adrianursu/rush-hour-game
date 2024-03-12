@@ -42,27 +42,46 @@ public class Board {
         Vehicle vehicleCopy = vehicle.copy();
         vehicleCopy.move(offset);
 
-        checkIfVehicleLeavesTheBoard(vehicle, vehicleCopy);
-        checkIfVehicleCollidesWithExistingOnes(vehicle, vehicleCopy);
+        if (isVehicleLeavesTheBoard(vehicle, vehicleCopy)) throw new Exception("Vehicle leaves the board");
+        if (isVehicleCollidesWithOtherVehicles(vehicle, vehicleCopy))
+            throw new Exception("Vehicle collides with other vehicles");
         vehicle.move(offset);
     }
 
-    public void moveBoardPart(boolean isLeft, int offset) throws Exception {
-        if (isLeft) {
-            if (Math.abs(leftPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
-            if (isAnyVehicleInBetweenLeftAndMiddlePart())
-                throw new Exception("root.Vehicle stuck in between left and middle parts");
+    public void moveLeftPart(int offset) throws Exception {
+        if (isAnyVehicleInBetweenLeftAndMiddlePart())
+            throw new Exception("root.Vehicle stuck in between left and middle parts");
 
-            leftPartOffset += offset;
-            getLeftVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
-        } else {
-            if (Math.abs(rightPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
-            if (isAnyVehicleInBetweenMiddleAndRightPart())
-                throw new Exception("root.Vehicle stuck in between middle and right parts");
+        if (!getPossibleOffsetsForLeftPartMovement().contains(offset)) throw new Exception("Offset is not valid");
 
-            rightPartOffset += offset;
-            getRightVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
-        }
+        leftPartOffset += offset;
+        getLeftVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
+    }
+
+    public List<Integer> getPossibleOffsetsForLeftPartMovement() {
+        if (isAnyVehicleInBetweenLeftAndMiddlePart()) return new ArrayList<>();
+
+        List<Integer> potentialLeftPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+        return potentialLeftPartMoves.stream().filter(m -> Math.abs(leftPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
+    }
+
+    public void moveRightPart(int offset) throws Exception {
+        if (isAnyVehicleInBetweenMiddleAndRightPart())
+            throw new Exception("root.Vehicle stuck in between middle and right parts");
+
+        if (!getPossibleOffsetsForRightPartMovement().contains(offset)) throw new Exception("Offset is not valid");
+
+        rightPartOffset += offset;
+        getRightVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
+    }
+
+    public List<Integer> getPossibleOffsetsForRightPartMovement() {
+        if (isAnyVehicleInBetweenMiddleAndRightPart()) return new ArrayList<>();
+
+        List<Integer> potentialRightPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+        return potentialRightPartMoves.stream().filter(m -> Math.abs(rightPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
     }
 
     public int getNumOfBlockingVehicles(String heroId) {
@@ -73,7 +92,7 @@ public class Board {
         for (Vehicle vehicle : vehicles) {
             if (vehicle.isVertical()) {
                 // if it's the left hero, we only care about vehicles on the right from him
-                // if it's the right hero, we only care about vehicles on the left from him 
+                // if it's the right hero, we only care about vehicles on the left from him
                 if (hero.isLeft()) {
                     if (vehicle.getColStart() < hero.getColStart()) continue;
                 } else {
@@ -124,7 +143,7 @@ public class Board {
         return !horizontalVOfLen3InCol7.isEmpty();
     }
 
-    private void checkIfVehicleCollidesWithExistingOnes(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
+    public boolean isVehicleCollidesWithOtherVehicles(Vehicle vInCurPos, Vehicle vInNewPos) {
         for (Vehicle vFromBoard : vehicles) {
             if (vFromBoard.getId().equals(vInCurPos.getId())) continue;
 
@@ -138,7 +157,7 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getRowEnd(), vInNewPos.getRowEnd());
 
                 if (vFromBoardEnd >= vStart && vEnd >= vFromBoardStart)
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
 
             } else if (!vFromBoard.isVertical() && !vInCurPos.isVertical()) {
                 if (vFromBoard.getRowStart() != vInCurPos.getRowStart()) continue;
@@ -150,7 +169,7 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getColEnd(), vInNewPos.getColEnd());
 
                 if (vFromBoardEnd >= vStart && vEnd >= vFromBoardStart)
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
 
             } else if (vFromBoard.isVertical() && !vInCurPos.isVertical()) {
                 int vFromBoardStart = vFromBoard.getRowStart();
@@ -164,7 +183,7 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getColEnd(), vInNewPos.getColEnd());
 
                 if (!(vFromBoardCol < vStart || vFromBoardCol > vEnd))
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
 
             } else if (!vFromBoard.isVertical() && vInCurPos.isVertical()) {
                 int vFromBoardStart = vFromBoard.getColStart();
@@ -178,12 +197,14 @@ public class Board {
                 int vEnd = Integer.max(vInCurPos.getRowEnd(), vInNewPos.getRowEnd());
 
                 if (!(vFromBoardRow < vStart || vFromBoardRow > vEnd))
-                    throw new Exception("root.Vehicle collides with another vehicle");
+                    return true;
             }
         }
+
+        return false;
     }
 
-    private void checkIfVehicleLeavesTheBoard(Vehicle vInCurPos, Vehicle vInNewPos) throws Exception {
+    public boolean isVehicleLeavesTheBoard(Vehicle vInCurPos, Vehicle vInNewPos) {
         if (vInCurPos.isVertical()) {
             int vCol = vInCurPos.getColStart();
 
@@ -194,19 +215,19 @@ public class Board {
                 int partStart = 5 + leftPartOffset;
                 int partEnd = 10 + leftPartOffset;
 
-                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("root.Vehicle leaves board");
+                if (vPathStart < partStart || vPathEnd > partEnd) return true;
 
             } else if (vCol < 9) {
                 int partStart = 5;
                 int partEnd = 10;
 
-                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("root.Vehicle leaves board");
+                if (vPathStart < partStart || vPathEnd > partEnd) return true;
 
             } else {
                 int partStart = 5 + rightPartOffset;
                 int partEnd = 10 + rightPartOffset;
 
-                if (vPathStart < partStart || vPathEnd > partEnd) throw new Exception("root.Vehicle leaves board");
+                if (vPathStart < partStart || vPathEnd > partEnd) return true;
             }
         } else {
             int vRow = vInCurPos.getRowStart();
@@ -214,9 +235,9 @@ public class Board {
             int vPathStart = Integer.min(vInCurPos.getColStart(), vInNewPos.getColStart());
             int vPathEnd = Integer.max(vInCurPos.getColEnd(), vInNewPos.getColEnd());
 
-            if (vPathStart >= 0 && vPathEnd <= 4) return; //perfectly fits into left part
-            if (vPathStart >= 5 && vPathEnd <= 8) return; //perfectly fits into middle part
-            if (vPathStart >= 9 && vPathEnd <= 13) return; //perfectly fits into right part
+            if (vPathStart >= 0 && vPathEnd <= 4) return false; //perfectly fits into left part
+            if (vPathStart >= 5 && vPathEnd <= 8) return false; //perfectly fits into middle part
+            if (vPathStart >= 9 && vPathEnd <= 13) return false; //perfectly fits into right part
 
             int leftPartStartRow = 5 + leftPartOffset;
             int leftPartEndRow = 10 + leftPartOffset;
@@ -229,18 +250,29 @@ public class Board {
 
             if (vPathStart >= 0 && vPathEnd <= 8) { //fits between left and middle
                 if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow && vRow >= middlePartStartRow && vRow <= middlePartEndRow))
-                    throw new Exception("root.Vehicle leaves board");
+                    return true;
 
             } else if (vPathStart >= 5 && vPathEnd <= 13) { //fits between middle and right
                 if (!(vRow >= middlePartStartRow && vRow <= middlePartEndRow && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
-                    throw new Exception("root.Vehicle leaves board");
+                    return true;
 
             } else if (vPathStart >= 0 && vPathEnd <= 13) { //fits between all 3 parts
                 if (!(vRow >= leftPartStartRow && vRow <= leftPartEndRow && vRow >= middlePartStartRow && vRow <= middlePartEndRow && vRow >= rightPartStartRow && vRow <= rightPartEndRow))
-                    throw new Exception("root.Vehicle leaves board");
-            } else throw new Exception("root.Vehicle leaves board");
+                    return true;
+            } else return true;
+        }
+
+        return false;
+    }
+
+        public Vehicle getHeroVehicle(boolean isMaximisingPlayer) {
+    for (Vehicle v : this.getVehicles()) {
+        if (v.isHero() && ((isMaximisingPlayer && v.isLeft()) || (!isMaximisingPlayer && !v.isLeft()))) {
+            return v;
         }
     }
+    return null; // Or throw an exception if the hero vehicle must exist.
+}
 
     private List<Vehicle> getLeftVehicles() {
         return vehicles.stream().filter(veh -> veh.getColStart() < 5).toList();
@@ -259,8 +291,6 @@ public class Board {
     }
 
     public static void printBoard(Board b) {
-
-        
         String[][] board = new String[Board.TRUE_HEIGHT][Board.TRUE_WIDTH];
         Arrays.stream(board).forEach(row -> Arrays.fill(row, " "));
 
@@ -314,13 +344,6 @@ public class Board {
         System.out.println();
     }
 
-    public Vehicle getHeroVehicle(boolean isMaximisingPlayer) {
-    for (Vehicle v : this.getVehicles()) {
-        if (v.isHero() && ((isMaximisingPlayer && v.isLeft()) || (!isMaximisingPlayer && !v.isLeft()))) {
-            return v;
-        }
-    }
-    return null; // Or throw an exception if the hero vehicle must exist.
-}
-
-}
+        public int getTrueWidth() {
+    return TRUE_WIDTH;
+}}

@@ -63,9 +63,6 @@ public class TwoPlayerConsoleVersion {
                 System.out.println("TERMINAL STATE");
                 break;
             }
-
-            // Toggle the player's turn
-            // game.setLeftPlayerMove(!game.isLeftPlayerMove());
         }
 
         scanner.close();
