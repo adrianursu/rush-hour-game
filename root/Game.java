@@ -31,12 +31,15 @@ public class Game {
     }
 
     public static List<String> actions(Game game) {
-        List<String> actions = new ArrayList<>();
 
         //todo optimize this shit
-        actions.addAll(getActionForVehicles(game));
-        actions.addAll(getActionForLeftPart(game));
-        actions.addAll(getActionForRightPart(game));
+        List<String> actions = new ArrayList<>(getActionForVehicles(game));
+
+        List<Integer> possibleLeftMovementsOffsets = game.getBoard().getPossibleOffsetsForLeftPartMovement();
+        actions.addAll(possibleLeftMovementsOffsets.stream().map(e -> "L" + e).toList());
+
+        List<Integer> possibleRightMovementsOffsets = game.getBoard().getPossibleOffsetsForRightPartMovement();
+        actions.addAll(possibleRightMovementsOffsets.stream().map(e -> "R" + e).toList());
 
         return actions;
     }
@@ -47,10 +50,10 @@ public class Game {
 
         if (str.equals("L")) {
             game.checkIfMoveIsNotZero(offset);
-            game.getBoard().moveBoardPart(true, offset);
+            game.getBoard().moveLeftPart(offset);
         } else if (str.equals("R")) {
             game.checkIfMoveIsNotZero(offset);
-            game.getBoard().moveBoardPart(false, offset);
+            game.getBoard().moveRightPart(offset);
         } else {
             Vehicle vehicle = game.getBoard().getVehicles().stream().filter(veh -> veh.getId().equals(str)).findFirst().orElseThrow(() -> new NoSuchElementException("root.Vehicle with Id " + str + " not found"));
             game.checkIfPlayerIsAllowedToMoveVehicle(vehicle);
@@ -98,28 +101,6 @@ public class Game {
 
     private void checkIfMoveIsNotZero(int offset) throws Exception {
         if (offset == 0) throw new Exception("0 move does not make sense");
-    }
-
-    private static List<String> getActionForLeftPart(Game game) {
-        if (game.getBoard().isAnyVehicleInBetweenLeftAndMiddlePart()) return new ArrayList<>();
-
-        List<Integer> potentialLeftPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-
-        int leftPartOffset = game.getBoard().getLeftPartOffset();
-        List<Integer> filteredListOfMoves = potentialLeftPartMoves.stream().filter(m -> Math.abs(leftPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
-
-        return filteredListOfMoves.stream().map(n -> "L" + n).toList();
-    }
-
-    private static List<String> getActionForRightPart(Game game) {
-        if (game.getBoard().isAnyVehicleInBetweenMiddleAndRightPart()) return new ArrayList<>();
-
-        List<Integer> potentialRightPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-
-        int rightPartOffset = game.getBoard().getRightPartOffset();
-        List<Integer> filteredListOfMoves = potentialRightPartMoves.stream().filter(m -> Math.abs(rightPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
-
-        return filteredListOfMoves.stream().map(n -> "R" + n).toList();
     }
 
     public Game copy() {

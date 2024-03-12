@@ -47,22 +47,40 @@ public class Board {
         vehicle.move(offset);
     }
 
-    public void moveBoardPart(boolean isLeft, int offset) throws Exception {
-        if (isLeft) {
-            if (Math.abs(leftPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
-            if (isAnyVehicleInBetweenLeftAndMiddlePart())
-                throw new Exception("root.Vehicle stuck in between left and middle parts");
+    public void moveLeftPart(int offset) throws Exception {
+        if (isAnyVehicleInBetweenLeftAndMiddlePart())
+            throw new Exception("root.Vehicle stuck in between left and middle parts");
 
-            leftPartOffset += offset;
-            getLeftVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
-        } else {
-            if (Math.abs(rightPartOffset + offset) > PART_MAX_OFFSET_ABS) throw new Exception("Offset is too large");
-            if (isAnyVehicleInBetweenMiddleAndRightPart())
-                throw new Exception("root.Vehicle stuck in between middle and right parts");
+        if (!getPossibleOffsetsForLeftPartMovement().contains(offset)) throw new Exception("Offset is not valid");
 
-            rightPartOffset += offset;
-            getRightVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
-        }
+        leftPartOffset += offset;
+        getLeftVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
+    }
+
+    public List<Integer> getPossibleOffsetsForLeftPartMovement() {
+        if (isAnyVehicleInBetweenLeftAndMiddlePart()) return new ArrayList<>();
+
+        List<Integer> potentialLeftPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+        return potentialLeftPartMoves.stream().filter(m -> Math.abs(leftPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
+    }
+
+    public void moveRightPart(int offset) throws Exception {
+        if (isAnyVehicleInBetweenMiddleAndRightPart())
+            throw new Exception("root.Vehicle stuck in between middle and right parts");
+
+        if (!getPossibleOffsetsForRightPartMovement().contains(offset)) throw new Exception("Offset is not valid");
+
+        rightPartOffset += offset;
+        getRightVehicles().forEach(vehicle -> vehicle.setRowStart(vehicle.getRowStart() + offset));
+    }
+
+    public List<Integer> getPossibleOffsetsForRightPartMovement() {
+        if (isAnyVehicleInBetweenMiddleAndRightPart()) return new ArrayList<>();
+
+        List<Integer> potentialRightPartMoves = new ArrayList<>(Arrays.asList(-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+
+        return potentialRightPartMoves.stream().filter(m -> Math.abs(rightPartOffset + m) <= Board.PART_MAX_OFFSET_ABS).toList();
     }
 
     public int getNumOfBlockingVehicles(String heroId) {
@@ -73,7 +91,7 @@ public class Board {
         for (Vehicle vehicle : vehicles) {
             if (vehicle.isVertical()) {
                 // if it's the left hero, we only care about vehicles on the right from him
-                // if it's the right hero, we only care about vehicles on the left from him 
+                // if it's the right hero, we only care about vehicles on the left from him
                 if (hero.isLeft()) {
                     if (vehicle.getColStart() < hero.getColStart()) continue;
                 } else {
