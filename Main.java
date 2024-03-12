@@ -1,6 +1,7 @@
 import root.Board;
 import root.BoardSetups;
 import root.Game;
+import root.mcts.MonteCarloTreeSearch;
 import root.two_player_console_ver.TwoPlayerConsoleVersion;
 
 import java.util.Random;
@@ -9,7 +10,8 @@ public class Main {
     public static void main(String[] args) {
         Game game = getRandomGame();
 
-        TwoPlayerConsoleVersion.play(game);
+//        TwoPlayerConsoleVersion.play(game);
+        MonteCarloTreeSearch.play(game);
     }
 
     public static Game getRandomGame() {

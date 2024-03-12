@@ -7,10 +7,11 @@ import java.util.List;
 
 public class Node {
     Game state;
-    int v;
-    int n; //n (times same)
+    int v; //value
+    int n; //times sampled  (n>=v)
     List<Node> children;
     Node parent;
+    String fromAction; //the action that led to this node generation
 
     public Node(Game state) {
         this.state = state;
@@ -67,7 +68,7 @@ public class Node {
 
     // Helper method for printing the tree structure
     private void printSubtree(Node node, String prefix, boolean isTail) {
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + node.v + " " + node.n);
+        System.out.println(prefix + (isTail ? "└── " : "├── ") + node.v + " " + node.n + " " + node.fromAction);
         for (int i = 0; i < node.children.size() - 1; i++) {
             printSubtree(node.children.get(i), prefix + (isTail ? "    " : "│   "), false);
         }

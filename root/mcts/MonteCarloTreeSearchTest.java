@@ -26,9 +26,8 @@ class MonteCarloTreeSearchTest {
     void rolloutTest() throws Exception {
         Game game = getState1();
         Node root = new Node(game);
-        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(root);
 
-        mcts.rollout(root);
+         MonteCarloTreeSearch.rollout(root);
 
         System.out.println();
     }
@@ -37,9 +36,8 @@ class MonteCarloTreeSearchTest {
     void searchTest() throws Exception {
         Game game = getState1();
         Node root = new Node(game);
-        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(root);
 
-        Node best = mcts.search(666);
+        Node best = MonteCarloTreeSearch.search(root, 666);
 
         root.printTree();
 
@@ -59,9 +57,7 @@ class MonteCarloTreeSearchTest {
         root.setN(1);
         child1.setN(1);
 
-        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(root);
-
-        Node selectedChild = mcts.select(root);
+        Node selectedChild = MonteCarloTreeSearch.select(root);
 
         assertTrue(selectedChild == child2 || selectedChild == child3);
     }
@@ -71,10 +67,8 @@ class MonteCarloTreeSearchTest {
     void ucb1Test1() {
         Node n1 = new Node(new Game(new Board()));
         n1.n = 0;
-        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(n1);
 
-
-        assertEquals(Double.MAX_VALUE, mcts.ucb1Value(n1));
+        assertEquals(Double.MAX_VALUE, MonteCarloTreeSearch.ucb1Value(n1));
     }
 
     @Test
@@ -88,10 +82,9 @@ class MonteCarloTreeSearchTest {
         n2.n = 1;
         n1.parent = parent;
         n2.parent = parent;
-        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(n1);
 
 
-        assertTrue(mcts.ucb1Value(n1) > mcts.ucb1Value(n2));
+        assertTrue(MonteCarloTreeSearch.ucb1Value(n1) > MonteCarloTreeSearch.ucb1Value(n2));
     }
 
     @Test
@@ -106,9 +99,7 @@ class MonteCarloTreeSearchTest {
         n2.v = 1;
         n1.parent = parent;
         n2.parent = parent;
-        MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(n1);
 
-
-        assertTrue(mcts.ucb1Value(n1) < mcts.ucb1Value(n2));
+        assertTrue(MonteCarloTreeSearch.ucb1Value(n1) < MonteCarloTreeSearch.ucb1Value(n2));
     }
 }
