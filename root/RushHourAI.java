@@ -57,12 +57,12 @@ public class RushHourAI {
                     (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >= hero.getRowStart() && v.getColStart() > hero.getColEnd())) {
                     blockingCount++;
                 }
-            } else {
-                // For the AI, we're assuming the goal is on the left, so we check vehicles on the left of the hero.
-                if ((!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColEnd() < hero.getColStart()) || 
-                    (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >= hero.getRowStart() && v.getColStart() < hero.getColStart())) {
-                    blockingCount++;
-                }
+        //     } else {
+        //         // For the AI, we're assuming the goal is on the left, so we check vehicles on the left of the hero.
+        //         if ((!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColEnd() < hero.getColStart()) || 
+        //             (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >= hero.getRowStart() && v.getColStart() < hero.getColStart())) {
+        //             blockingCount++;
+        //         }
             }
         }
         return blockingCount;

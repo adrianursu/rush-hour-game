@@ -52,6 +52,7 @@ public class Minimax {
             }
         }
         System.out.println("Best move is: " + bestMove + " and the score is: " + bestScore);
+        System.out.println(Game.actions(game));
         return bestMove;
     }
 
