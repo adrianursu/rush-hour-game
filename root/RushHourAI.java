@@ -30,7 +30,7 @@ public class RushHourAI {
 
         return isMaximisingPlayer ? score : -score; // If we are minimising, invert the score.
     }
-    // TODO: change the condition to check if any of the heros passed the board -> they need to be outside of the board in order to win
+
     private boolean hasWon(Board board, boolean isMaximisingPlayer) {
         // Return true if the maximising player's hero vehicle has reached the goal.
         // Assuming that reaching the goal means getting to the left edge for AI and right edge for the human.
@@ -52,13 +52,15 @@ public class RushHourAI {
         // Assuming vertical movement is up and down, and horizontal is left and right.
         for (Vehicle v : board.getVehicles()) {
             if (isMaximisingPlayer) {
-                // For the AI, we're assuming the goal is on the left, so we check vehicles on the left of the hero.
-                if (!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColEnd() < hero.getColStart()) {
+                // For the human, assuming the goal is on the right, we check vehicles on the right of the hero.
+                if ((!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColStart() > hero.getColEnd()) || 
+                    (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >= hero.getRowStart() && v.getColStart() > hero.getColEnd())) {
                     blockingCount++;
                 }
             } else {
-                // For the human, assuming the goal is on the right, we check vehicles on the right of the hero.
-                if (!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColStart() > hero.getColEnd()) {
+                // For the AI, we're assuming the goal is on the left, so we check vehicles on the left of the hero.
+                if ((!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColEnd() < hero.getColStart()) || 
+                    (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >= hero.getRowStart() && v.getColStart() < hero.getColStart())) {
                     blockingCount++;
                 }
             }
