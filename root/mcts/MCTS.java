@@ -5,12 +5,8 @@ import root.Game;
 
 import java.util.*;
 
-//todo do not generate repeated states (nodes)
-//todo add a table for already explored states
-//todo add initial move
-//todo add time limitation
 
-public class MonteCarloTreeSearch {
+public class MCTS {
     public static Node select(Node node) {
         List<Node> bestChildren = new ArrayList<>();
         double maxUcbValue = Double.NEGATIVE_INFINITY;
@@ -63,10 +59,13 @@ public class MonteCarloTreeSearch {
         });
     }
 
-    public static int rollout(Node node) throws Exception {
+    public static int rollout(Node node, boolean isAiLeft) throws Exception {
+//        return 1;
         Game gameCopy = node.getState().copy();
 
-//        int iterations = 0;
+        int iterations = 0;
+//        long startTime = System.currentTimeMillis();
+
         while (!Game.terminalTest(gameCopy)) {
             List<String> actions = Game.actions(gameCopy);
             Random random = new Random();
@@ -75,12 +74,14 @@ public class MonteCarloTreeSearch {
 
             gameCopy = Game.result(gameCopy, randomAction);
 
-//            iterations++;
+            iterations++;
         }
 
-//        System.out.println(iterations);
+//        long endTime = System.currentTimeMillis();
 
-        return Game.utility(gameCopy, false);
+//        System.out.println(iterations + " " + (endTime - startTime));
+
+        return Game.utility(gameCopy, isAiLeft);
     }
 
     public static void backpropagate(Node node, int value) {
@@ -91,7 +92,7 @@ public class MonteCarloTreeSearch {
         }
     }
 
-    public static Node search(Node initialState, int iterations) throws Exception {
+    public static Node search(Node initialState, int iterations, boolean isAiLeft) throws Exception {
         for (int i = 0; i < iterations; i++) {
             Node selectedNode = initialState;
 
@@ -104,7 +105,7 @@ public class MonteCarloTreeSearch {
                 selectedNode = selectedNode.children.get(0);
             }
 
-            int value = rollout(selectedNode); //we value of nodes is how many times right won (AI is always right)
+            int value = rollout(selectedNode, isAiLeft); //we value of nodes is how many times right won (AI is always right)
 
             backpropagate(selectedNode, value);
         }
@@ -148,7 +149,7 @@ public class MonteCarloTreeSearch {
                 System.out.println("RIGHT (AI) PLAYER MOVE: ");
                 System.out.println("AI thinking mcst ...");
                 try {
-                    Node bestNode = search(new Node(g), 500);
+                    Node bestNode = search(new Node(g), 1000, false);
                     System.out.println("Best node" + bestNode.v + "/" + bestNode.n + " " + bestNode.fromAction);
 
                     g = Game.result(g, bestNode.fromAction);

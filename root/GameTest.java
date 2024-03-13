@@ -12,7 +12,7 @@ class GameTest {
     private Game getGameWithInitialState1() {
         Board b = new Board();
 
-        BoardSetups.values()[0].initialize(b);
+        BoardSetups.values()[3].initialize(b);
 
         return new Game(b);
     }
@@ -85,5 +85,12 @@ class GameTest {
 
         System.out.println();
 
+    }
+
+    @Test
+    void branchingFactorFromInitialState1() {
+        Game game = getGameWithInitialState1();
+
+        System.out.println(Game.actions(game).size());
     }
 }

@@ -2,8 +2,10 @@ package root.mcts;
 
 import root.Game;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 public class Node {
     Game state;
@@ -76,5 +78,49 @@ public class Node {
             printSubtree(node.children.get(node.children.size() - 1),
                     prefix + (isTail ?"    " : "│   "), true);
         }
+    }
+
+    public double calculateAvgBranchingFactorWithoutLeafs() {
+        Queue<Node> queue = new ArrayDeque<>();
+        queue.add(this);
+
+        int totalBranchingFactor = 0;
+        int totalNodes = 0;
+
+        while (!queue.isEmpty()) {
+            Node currentNode = queue.poll();
+
+            // Skip leaf nodes
+            if (!currentNode.isLeaf()) {
+                totalBranchingFactor += currentNode.children.size();
+                totalNodes++;
+                for (Node child : currentNode.children) {
+                    queue.add(child);
+                }
+            }
+        }
+
+        // Avoid division by zero
+        if (totalNodes == 0) {
+            return 0;
+        }
+
+        return (double) totalBranchingFactor / totalNodes;
+    }
+
+    public int getTotalNumberOfNodes() {
+        int total = 1; // Start by counting the current node
+        for (Node child : children) {
+            total += child.getTotalNumberOfNodes(); // Add the count of nodes in the subtree
+        }
+        return total;
+    }
+
+    public int getNumberOfNonLeafNodes() {
+        int count = isLeaf() ? 0 : 1;
+        for (Node child : children) {
+            count += child.getNumberOfNonLeafNodes();
+        }
+        return count;
     }
 }
