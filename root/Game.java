@@ -6,26 +6,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class Game {
-    private final Board board;
-    private boolean isLeftPlayerMove;
-
-    public Game(Board board) {
-        this.board = board;
-        this.isLeftPlayerMove = true;
-    }
-
-    public boolean isLeftPlayerMove() {
-        return isLeftPlayerMove;
-    }
-
-    public void setLeftPlayerMove(boolean leftPlayerMove) {
-        isLeftPlayerMove = leftPlayerMove;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
     public static boolean player(Game game) {
         return game.isLeftPlayerMove();
     }
@@ -88,6 +68,86 @@ public class Game {
         }
 
         return -1;
+    }
+
+    public static double evaluate(Game game, boolean isLeftPlayer) {
+        if (terminalTest(game)) return utility(game, isLeftPlayer);
+
+        int f1 = game.getBoard().getNumberOfObstacleVehiclesFromHeroToGoal(true); //range of values 0-11
+        int f11 = game.getBoard().getNumberOfObstacleVehiclesFromHeroToGoal(false); //range of values 0-11
+
+        int f2 = game.getBoard().getNumberOfPotentialObstacleBoardPartsFromHeroToGoal(true); // 0/1/2
+        int f22 = game.getBoard().getNumberOfPotentialObstacleBoardPartsFromHeroToGoal(false); // 0/1/2
+
+        int f3 = game.getBoard().getNumberOfObstacleBoardPartsFromHeroToGoal(true); // 0/1/2
+        int f33 = game.getBoard().getNumberOfObstacleBoardPartsFromHeroToGoal(false); // 0/1/2
+
+// if were to normalize so that all are of equal importance
+//        int w1 = 2;
+//        int w2 = 11;
+//        int w3 = 11;
+
+        if (isLeftPlayer) {
+            double w1 = 2;
+            double w2 = 6;
+            double w3 = 9;
+
+            double w11 = 2;
+            double w22 = 5;
+            double w33 = 7;
+
+            double worstPossibleOffenseScore = (11 * w1) + (2 * w2) + (2 * w3);
+            double howBadIsOffensiveScore = (f1 * w1) + (f2 * w2) + (f3 * w3);
+
+            double offensiveScore = worstPossibleOffenseScore - howBadIsOffensiveScore; //higher is better
+            double defensiveScore = (f11 * w11) + (f22 * w22) + (f33 * w33); //higher is better
+
+            double bestPossibleDefenseScore = (11 * w11) + (2 * w22) + (2 * w33);
+
+            double score = offensiveScore + defensiveScore;
+            double normalizedScore = score / (bestPossibleDefenseScore + worstPossibleOffenseScore);
+            return normalizedScore;
+        } else {
+            double w11 = 2;
+            double w22 = 6;
+            double w33 = 9;
+
+            double w1 = 2;
+            double w2 = 5;
+            double w3 = 7;
+
+            double worstPossibleOffenseScore = (11 * w11) + (2 * w22) + (2 * w33);
+            double howBadIsOffensiveScore = (f11 * w11) + (f22 * w22) + (f33 * w33);
+
+            double offensiveScore = worstPossibleOffenseScore - howBadIsOffensiveScore; //higher is better
+            double defensiveScore = (f1 * w1) + (f2 * w2) + (f3 * w3); //higher is better
+
+            double bestPossibleDefenseScore = (11 * w1) + (2 * w2) + (2 * w3);
+
+            double score = offensiveScore + defensiveScore;
+            double normalizedScore = score / (bestPossibleDefenseScore + worstPossibleOffenseScore);
+            return normalizedScore;
+        }
+    }
+
+    private final Board board;
+    private boolean isLeftPlayerMove;
+
+    public Game(Board board) {
+        this.board = board;
+        this.isLeftPlayerMove = true;
+    }
+
+    public boolean isLeftPlayerMove() {
+        return isLeftPlayerMove;
+    }
+
+    public void setLeftPlayerMove(boolean leftPlayerMove) {
+        isLeftPlayerMove = leftPlayerMove;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     private void checkIfPlayerIsAllowedToMoveVehicle(Vehicle vehicle) throws Exception {

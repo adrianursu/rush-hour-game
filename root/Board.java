@@ -3,6 +3,7 @@ package root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class Board {
     public static final int TRUE_HEIGHT = 16; //0-15, initial pos of parts 5-10. When offset is max up then pos of part is 0-5, when offset is max down then pos of part is 10-15
@@ -335,4 +336,114 @@ public class Board {
         System.out.println();
     }
 
+    public int getNumberOfObstacleVehiclesFromHeroToGoal(boolean isForLeftHero) {
+        int count = 0;
+
+        Vehicle hero;
+        if (isForLeftHero) {
+            hero = vehicles.stream().filter(veh -> veh.isHero() && veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Left hero not found"));
+        } else {
+            hero = vehicles.stream().filter(veh -> veh.isHero() && !veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Right hero not found"));
+        }
+
+        int heroPathStart = isForLeftHero ? hero.getColStart() : 0;
+        int heroPathEnd = isForLeftHero ? (TRUE_WIDTH - 1 - 1) : hero.getColEnd();
+
+        for (Vehicle vFromBoard : vehicles) {
+            if (vFromBoard.getId().equals(hero.getId())) continue;
+
+            if (vFromBoard.isVertical()) {
+                int vFromBoardStart = vFromBoard.getRowStart();
+                int vFromBoardEnd = vFromBoard.getRowEnd();
+
+                if (hero.getRowStart() < vFromBoardStart || hero.getRowStart() > vFromBoardEnd) continue;
+
+                int vFromBoardCol = vFromBoard.getColStart();
+
+                if (!(vFromBoardCol < heroPathStart || vFromBoardCol > heroPathEnd)) count++;
+            } else {
+                if (vFromBoard.getRowStart() != hero.getRowStart()) continue;
+
+                int vFromBoardStart = vFromBoard.getColStart();
+                int vFromBoardEnd = vFromBoard.getColEnd();
+
+                if (vFromBoardEnd >= heroPathStart && heroPathEnd >= vFromBoardStart) count++;
+            }
+        }
+
+        return count;
+    }
+
+    public int getNumberOfPotentialObstacleBoardPartsFromHeroToGoal(boolean isForLeftHero) {
+        Vehicle hero;
+        if (isForLeftHero) {
+            hero = vehicles.stream().filter(veh -> veh.isHero() && veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Left hero not found"));
+
+            if (hero.getColEnd() < 5) return 2;
+            if (hero.getColEnd() < 9) return 1;
+        } else {
+            hero = vehicles.stream().filter(veh -> veh.isHero() && !veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Right hero not found"));
+
+            if (hero.getColStart() > 8) return 2;
+            if (hero.getColStart() > 4) return 1;
+        }
+        return 0;
+    }
+
+    public int getNumberOfObstacleBoardPartsFromHeroToGoal(boolean isForLeftHero) {
+        int leftPartStartRow = 5 + leftPartOffset;
+        int leftPartEndRow = 10 + leftPartOffset;
+
+        int middlePartStartRow = 5;
+        int middlePartEndRow = 10;
+
+        int rightPartStartRow = 5 + rightPartOffset;
+        int rightPartEndRow = 10 + rightPartOffset;
+
+        Vehicle hero;
+        if (isForLeftHero) {
+            hero = vehicles.stream().filter(veh -> veh.isHero() && veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Left hero not found"));
+
+            int heroRow = hero.getRowStart();
+
+            int heroPathStart = hero.getColStart();
+
+            if (heroPathStart >= 8) return 0;
+
+            if (heroPathStart >= 4) {
+                if (!(heroRow >= rightPartStartRow && heroRow <= rightPartEndRow))
+                    return 1;
+                return 0;
+
+            }
+
+            int count = 0;
+
+            if (!(heroRow >= middlePartStartRow && heroRow <= middlePartEndRow)) count++;
+            if (!(heroRow >= rightPartStartRow && heroRow <= rightPartEndRow)) count++;
+
+            return count;
+        } else {
+            hero = vehicles.stream().filter(veh -> veh.isHero() && !veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Right hero not found"));
+
+            int heroRow = hero.getRowStart();
+
+            int heroPathEnd = hero.getColEnd();
+
+            if (heroPathEnd <= 5) return 0;
+
+            if (heroPathEnd <= 9) {
+                if (!(heroRow >= leftPartStartRow && heroRow <= leftPartEndRow))
+                    return 1;
+                return 0;
+            }
+
+            int count = 0;
+
+            if (!(heroRow >= leftPartStartRow && heroRow <= leftPartEndRow)) count++;
+            if (!(heroRow >= middlePartStartRow && heroRow <= middlePartEndRow)) count++;
+
+            return count;
+        }
+    }
 }

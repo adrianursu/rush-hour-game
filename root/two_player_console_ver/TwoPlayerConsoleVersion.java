@@ -14,6 +14,8 @@ import java.util.Scanner;
 public class TwoPlayerConsoleVersion {
     public static void play(Game g) {
         Board.printBoard(g.getBoard());
+        System.out.println(Game.evaluate(g, true));
+        System.out.println(Game.evaluate(g, false));
 
         Scanner scanner = new Scanner(System.in);
 
@@ -32,6 +34,8 @@ public class TwoPlayerConsoleVersion {
                 g = Game.result(g, input);
 
                 Board.printBoard(g.getBoard());
+                System.out.println(Game.evaluate(g, true));
+                System.out.println(Game.evaluate(g, false));
 
                 if (Game.terminalTest(g)) {
                     System.out.println("TERMINAL STATE");
