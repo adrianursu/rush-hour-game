@@ -123,4 +123,14 @@ public class Node {
         }
         return count;
     }
+
+    public int getDepth() {
+        int depth = 0;
+        Node current = this;
+        while (current.parent != null) {
+            depth++;
+            current = current.parent;
+        }
+        return depth;
+    }
 }

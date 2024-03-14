@@ -8,7 +8,7 @@ import root.Game;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class MCTSTest {
+class McstTest {
     @Test
     void avgBranchingFactorTestState1() throws Exception {
         Game game = getState1();
@@ -16,7 +16,7 @@ class MCTSTest {
 
         Node root1 = new Node(game);
 
-        MCTS.search(root1, 200000, true);
+        Mcst.search(root1, 200000, true);
 
         double avgBranchingFactor = root1.calculateAvgBranchingFactorWithoutLeafs();
 
@@ -32,7 +32,7 @@ class MCTSTest {
 
         Node root1 = new Node(game);
 
-        MCTS.search(root1, 200000, true);
+        Mcst.search(root1, 200000, true);
 
         double avgBranchingFactor = root1.calculateAvgBranchingFactorWithoutLeafs();
 
@@ -66,7 +66,7 @@ class MCTSTest {
         Game game = getState1();
         Node root = new Node(game);
 
-        MCTS.rollout(root, false);
+        Mcst.rollout(root, false);
 
         System.out.println();
     }
@@ -77,7 +77,7 @@ class MCTSTest {
         game = Game.result(game, ">1");
         Node root = new Node(game);
 
-        Node best = MCTS.search(root, 1000, false);
+        Node best = Mcst.search(root, 1000, false);
 
         root.printTree();
 
@@ -91,7 +91,7 @@ class MCTSTest {
         for (int i = 0; i < 5; i++) {
             Node root1 = new Node(getState1());
             long startTime = System.currentTimeMillis();
-            MCTS.search(root1, 1000, true);
+            Mcst.search(root1, 1000, true);
             long endTime = System.currentTimeMillis();
 
             long time = endTime - startTime;
@@ -112,7 +112,7 @@ class MCTSTest {
         for (int i = 0; i < 5; i++) {
             Node root1 = new Node(getState4());
             long startTime = System.currentTimeMillis();
-            MCTS.search(root1, 1000, true);
+            Mcst.search(root1, 1000, true);
             long endTime = System.currentTimeMillis();
 
             long time = endTime - startTime;
@@ -139,7 +139,7 @@ class MCTSTest {
         root.setN(1);
         child1.setN(1);
 
-        Node selectedChild = MCTS.select(root);
+        Node selectedChild = Mcst.select(root);
 
         assertTrue(selectedChild == child2 || selectedChild == child3);
     }
@@ -150,7 +150,7 @@ class MCTSTest {
         Node n1 = new Node(new Game(new Board()));
         n1.n = 0;
 
-        assertEquals(Double.MAX_VALUE, MCTS.ucb1Value(n1));
+        assertEquals(Double.MAX_VALUE, Mcst.ucb1Value(n1));
     }
 
     @Test
@@ -166,7 +166,7 @@ class MCTSTest {
         n2.parent = parent;
 
 
-        assertTrue(MCTS.ucb1Value(n1) > MCTS.ucb1Value(n2));
+        assertTrue(Mcst.ucb1Value(n1) > Mcst.ucb1Value(n2));
     }
 
     @Test
@@ -182,7 +182,7 @@ class MCTSTest {
         n1.parent = parent;
         n2.parent = parent;
 
-        assertTrue(MCTS.ucb1Value(n1) < MCTS.ucb1Value(n2));
+        assertTrue(Mcst.ucb1Value(n1) < Mcst.ucb1Value(n2));
     }
 
     @Test
@@ -192,7 +192,7 @@ class MCTSTest {
         long msecStart = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
 
-            MCTS.rollout(root1, true);
+            Mcst.rollout(root1, true);
         }
 
         long msecEnd = System.currentTimeMillis();
@@ -208,7 +208,7 @@ class MCTSTest {
         long msecStart = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
 
-            MCTS.rollout(root1, true);
+            Mcst.rollout(root1, true);
         }
 
         long msecEnd = System.currentTimeMillis();

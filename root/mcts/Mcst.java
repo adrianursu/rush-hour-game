@@ -6,7 +6,7 @@ import root.Game;
 import java.util.*;
 
 
-public class MCTS {
+public class Mcst {
     public static Node select(Node node) {
         List<Node> bestChildren = new ArrayList<>();
         double maxUcbValue = Double.NEGATIVE_INFINITY;
