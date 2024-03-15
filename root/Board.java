@@ -446,4 +446,12 @@ public class Board {
             return count;
         }
     }
+
+    public int getDistanceToGoal(boolean isForLeftHero) {
+        if (isForLeftHero) {
+            return TRUE_WIDTH - 1 - vehicles.stream().filter(veh -> veh.isHero() && veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Left hero not found")).getColEnd();
+        } else {
+            return vehicles.stream().filter(veh -> veh.isHero() && !veh.isLeft()).findFirst().orElseThrow(() -> new NoSuchElementException("Right hero not found")).getColStart();
+        }
+    }
 }

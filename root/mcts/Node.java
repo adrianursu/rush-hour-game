@@ -9,7 +9,7 @@ import java.util.Queue;
 
 public class Node {
     Game state;
-    int v; //value
+    double v; //value
     int n; //times sampled  (n>=v)
     List<Node> children;
     Node parent;
@@ -35,11 +35,11 @@ public class Node {
         return n;
     }
 
-    public int getV() {
+    public double getV() {
         return v;
     }
 
-    public void setV(int v) {
+    public void setV(double v) {
         this.v = v;
     }
 
@@ -76,7 +76,7 @@ public class Node {
         }
         if (node.children.size() > 0) {
             printSubtree(node.children.get(node.children.size() - 1),
-                    prefix + (isTail ?"    " : "│   "), true);
+                    prefix + (isTail ? "    " : "│   "), true);
         }
     }
 
@@ -132,5 +132,14 @@ public class Node {
             current = current.parent;
         }
         return depth;
+    }
+
+    public double getVDividedByN() {
+        if (n == 0) return 0;
+        return v / n;
+    }
+
+    public void removeChild(Node child) {
+        children.remove(child);
     }
 }

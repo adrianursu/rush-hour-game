@@ -1,9 +1,10 @@
 import root.Board;
 import root.BoardSetups;
 import root.Game;
-import root.mcts.Mcst;
+import root.mcts.Mcst1;
 import root.mcts.Mcst2;
-import root.two_player_console_ver.TwoPlayerConsoleVersion;
+import root.mcts.Mcst4;
+import root.mcts.Mcts3;
 
 import java.util.Random;
 
@@ -12,8 +13,10 @@ public class Main {
         Game game = getRandomGame();
 
 //        TwoPlayerConsoleVersion.play(game);
-//        Mcst.play(game);
-        Mcst2.play(game);
+//        Mcst1.play(game);
+//        Mcst2.play(game);
+//        Mcts3.play(game);
+        Mcst4.play(game);
     }
 
     public static Game getRandomGame() {

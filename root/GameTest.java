@@ -84,7 +84,6 @@ class GameTest {
         List<Integer> test = potentialLeftPartMoves.stream().filter(m -> ((kek + m) >= 0 && (kek + 1 + m) <= 13)).toList();
 
         System.out.println();
-
     }
 
     @Test

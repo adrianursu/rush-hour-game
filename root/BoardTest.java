@@ -161,4 +161,24 @@ class BoardTest {
         Board.printBoard(board);
         assertEquals(board.getNumberOfObstacleBoardPartsFromHeroToGoal(true), 1);
     }
+
+    @Test
+    void getDistanceToGoal1() throws Exception {
+        Board board = new Board();
+        board.addVehicle(new Vehicle(true, true, 2, 1 + Board.PART_MAX_OFFSET_ABS, 0, false, '>'));
+
+        Board.printBoard(board);
+        assertEquals(board.getDistanceToGoal(true), 12);
+    }
+
+    @Test
+    void getDistanceToGoal2() throws Exception {
+        Board board = new Board();
+        board.addVehicle(new Vehicle(true, false, 2, 1 + Board.PART_MAX_OFFSET_ABS, 12, false, '<'));
+
+        Board.printBoard(board);
+        assertEquals(board.getDistanceToGoal(false), 12);
+    }
+
+
 }

@@ -6,7 +6,7 @@ import root.Game;
 import java.util.*;
 
 
-public class Mcst {
+public class Mcst1 {
     public static Node select(Node node) {
         List<Node> bestChildren = new ArrayList<>();
         double maxUcbValue = Double.NEGATIVE_INFINITY;
@@ -59,7 +59,7 @@ public class Mcst {
         });
     }
 
-    public static int rollout(Node node, boolean isAiLeft) throws Exception {
+    public static double rollout(Node node, boolean isAiLeft) throws Exception {
 //        return 1;
         Game gameCopy = node.getState().copy();
 
@@ -77,14 +77,14 @@ public class Mcst {
             iterations++;
         }
 
-//        long endTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
 
 //        System.out.println(iterations + " " + (endTime - startTime));
 
         return Game.utility(gameCopy, isAiLeft);
     }
 
-    public static void backpropagate(Node node, int value) {
+    public static void backpropagate(Node node, double value) {
         while (node != null) {
             node.setV(node.getV() + value);
             node.setN(node.getN() + 1);
@@ -105,10 +105,11 @@ public class Mcst {
                 selectedNode = selectedNode.children.get(0);
             }
 
-            int value = rollout(selectedNode, isAiLeft); //we value of nodes is how many times right won (AI is always right)
+            double value = rollout(selectedNode, isAiLeft); //we value of nodes is how many times right won (AI is always right)
 
             backpropagate(selectedNode, value);
         }
+
 
 
         return Collections.max(initialState.children, Comparator.comparingDouble(c -> {

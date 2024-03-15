@@ -5,58 +5,10 @@ import root.Game;
 
 import java.util.*;
 
-public class Mcst2 extends Mcst1 {
-    public static void expand(Node node, boolean isAiLeft) {
-        Game game = node.getState();
-        List<String> actions = Game.actions(game);
-        Collections.shuffle(actions);
-
-        int nodeDepth = node.getDepth();
-
-        List<Pair<Node, Double>> childNodesWithScores = new ArrayList<>();
-
-        actions.forEach(a -> {
-            try {
-                Game gameCopy = game.copy();
-                gameCopy = Game.result(gameCopy, a);
-
-                double score = 0;
-
-                if (isAiLeft && nodeDepth % 2 == 0) {
-                    score = Game.evaluate(gameCopy, true);
-                } else if (isAiLeft && nodeDepth % 2 == 1) {
-                    score = Game.evaluate(gameCopy, false);
-                } else if (!isAiLeft && nodeDepth % 2 == 0) {
-                    score = Game.evaluate(gameCopy, false);
-                } else if (!isAiLeft && nodeDepth % 2 == 1) {
-                    score = Game.evaluate(gameCopy, true);
-                }
-
-                Node n = new Node(gameCopy);
-                n.fromAction = a;
-                childNodesWithScores.add(new Pair<>(n, score));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        childNodesWithScores.sort((pair1, pair2) -> Double.compare(pair2.getR(), pair1.getR()));
-
-        Optional<Pair<Node, Double>> moveLeadingToWin = childNodesWithScores.stream().findFirst().filter(pair -> pair.getR() == 1.0);
-
-        if (moveLeadingToWin.isPresent()) {
-            node.addChild(moveLeadingToWin.get().getL());
-            node.addChild(moveLeadingToWin.get().getL());
-            node.addChild(moveLeadingToWin.get().getL());
-            node.addChild(moveLeadingToWin.get().getL());
-        } else {
-            childNodesWithScores.stream()
-                    .limit(4)
-                    .forEach(pair -> node.addChild(pair.getL()));
-        }
-    }
-
+public class Mcst4 extends Mcts3{
     public static Node search(Node initialState, int iterations, boolean isAiLeft) throws Exception {
+        List<Integer> prunedAtThisDepths = new ArrayList<>();
+
         for (int i = 0; i < iterations; i++) {
             Node selectedNode = initialState;
 
@@ -72,6 +24,8 @@ public class Mcst2 extends Mcst1 {
             double value = rollout(selectedNode, isAiLeft); //we value of nodes is how many times right won (AI is always right)
 
             backpropagate(selectedNode, value);
+
+            prunedAtThisDepths = pruneTreeIfNecessary(initialState, selectedNode.getDepth(), prunedAtThisDepths);
         }
 
 //        initialState.printTree();
@@ -113,7 +67,7 @@ public class Mcst2 extends Mcst1 {
 
             } else {
                 System.out.println("RIGHT (AI) PLAYER MOVE: ");
-                System.out.println("AI thinking mcst2 ...");
+                System.out.println("AI thinking mcst4 ...");
                 try {
                     Node bestNode = search(new Node(g), 1000, false);
                     System.out.println("Best node: " + bestNode.v + "/" + bestNode.n + " " + bestNode.fromAction);
@@ -133,5 +87,39 @@ public class Mcst2 extends Mcst1 {
         }
 
         scanner.close();
+    }
+
+    private static List<Integer> pruneTreeIfNecessary(Node root, int depthOfLastEncounteredNode, List<Integer> prunedAtDepthsSoFar) {
+        if (depthOfLastEncounteredNode >= 3) {
+            if (!prunedAtDepthsSoFar.contains(depthOfLastEncounteredNode - 3)) {
+//                System.out.println("prun");
+                pruneTreeAtDepth(root, depthOfLastEncounteredNode - 3);
+                prunedAtDepthsSoFar.add(depthOfLastEncounteredNode - 3);
+            }
+        }
+
+        return prunedAtDepthsSoFar;
+    }
+
+
+    private static void pruneTreeAtDepth(Node root, int depth) {
+        if (depth == 0) {
+            // Assuming the node has children and a method to get them.
+            List<Node> children = root.getChildren();
+
+            if (!children.isEmpty()) {
+                // Find the child with the lowest value. Assuming Node has a method to get its value.
+
+                Node lowestValueChild = Collections.min(children, Comparator.comparing(Node::getVDividedByN));
+
+                // Assuming Node has a method to remove a child.
+                root.removeChild(lowestValueChild);
+            }
+        } else {
+            // Recursively call this method for each child, decreasing depth by 1.
+            for (Node child : root.getChildren()) {
+                pruneTreeAtDepth(child, depth - 1);
+            }
+        }
     }
 }

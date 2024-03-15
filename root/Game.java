@@ -82,10 +82,14 @@ public class Game {
         int f3 = game.getBoard().getNumberOfObstacleBoardPartsFromHeroToGoal(true); // 0/1/2
         int f33 = game.getBoard().getNumberOfObstacleBoardPartsFromHeroToGoal(false); // 0/1/2
 
+//        int f4 = game.getBoard().getDistanceToGoal(true); //range 0-12
+//        int f44 = game.getBoard().getDistanceToGoal(false); //range 0-12
+
 // if were to normalize so that all are of equal importance
 //        int w1 = 2;
 //        int w2 = 11;
 //        int w3 = 11;
+//        int w4 = 1.9;
 
         if (isLeftPlayer) {
             double w1 = 2;

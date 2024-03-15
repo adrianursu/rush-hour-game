@@ -33,14 +33,4 @@ class Mcst2Test {
 
         return new Game(b);
     }
-
-    Game getState4() throws Exception {
-        Board b = new Board();
-        BoardSetups[] setups = BoardSetups.values();
-        BoardSetups randomSetup = setups[3];
-
-        randomSetup.initialize(b);
-
-        return new Game(b);
-    }
 }
