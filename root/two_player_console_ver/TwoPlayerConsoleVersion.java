@@ -36,13 +36,17 @@ public class TwoPlayerConsoleVersion {
                 // Adding a log to confirm we reach this point.
                 System.out.println("Preparing to find the best move for AI...");
 
+
+                long startTime = System.currentTimeMillis();
                 String bestMove = Minimax.findBestMove(game, Minimax.MAX_DEPTH, false);
                 if (bestMove != null) {
                     try {
                         System.out.println("Attempting AI move: " + bestMove);
                         game = Game.result(game, bestMove);
                         System.out.println("AI successfully played: " + bestMove);
-
+                        long endTime = System.currentTimeMillis();
+                        long duration = endTime - startTime;
+                        System.out.println("It took "+ duration + "ms for the AI to make this move!");
                     } catch (Exception e) {
                         System.out.println("==== ERROR WITH AI MOVE ====");
 
