@@ -4,14 +4,14 @@ import java.util.Scanner;
 
 import root.Board;
 import root.Game;
-import root.RushHourAI;
 
 public class Minimax {
-    
-    // The depth is how far the algorithm will look ahead in the game. 
-    // Adjust this value based on how complex the game is and how long you can wait for the AI to make a move.
+
+    // The depth is how far the algorithm will look ahead in the game.
+    // Adjust this value based on how complex the game is and how long you can wait
+    // for the AI to make a move.
     public static final int MAX_DEPTH = 5;
-    
+
     public static String findBestMove(Game game, int depth, boolean isMaximisingPlayer) {
         System.out.println("Going in the findBestMove method");
         // Here we are at the terminal depth or the game is over
@@ -21,7 +21,7 @@ public class Minimax {
 
         String bestMove = null;
         int bestScore;
-        
+
         if (isMaximisingPlayer) {
             bestScore = Integer.MIN_VALUE;
             for (String move : Game.actions(game)) {
@@ -34,7 +34,8 @@ public class Minimax {
                         bestMove = move;
                     }
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the exception thrown by Game.result)
+                    // Handle the situation where the move is not valid (for example, catching the
+                    // exception thrown by Game.result)
                 }
             }
         } else {
@@ -49,7 +50,8 @@ public class Minimax {
                         bestMove = move;
                     }
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the exception thrown by Game.result)
+                    // Handle the situation where the move is not valid (for example, catching the
+                    // exception thrown by Game.result)
                 }
             }
         }
@@ -60,12 +62,12 @@ public class Minimax {
 
     public static int minimax(Game game, int depth, boolean isMaximisingPlayer, int alpha, int beta) {
         if (depth == 0 || Game.terminalTest(game)) {
-            RushHourAI ai = new RushHourAI();
+            MiniMaxAIFunctions ai = new MiniMaxAIFunctions();
             return ai.evaluate(game.getBoard(), game.isLeftPlayerMove());
         }
 
         int bestScore;
-        
+
         if (isMaximisingPlayer) {
             bestScore = Integer.MIN_VALUE;
             for (String move : Game.actions(game)) {
@@ -76,12 +78,13 @@ public class Minimax {
                     bestScore = Math.max(bestScore, score);
 
                     alpha = Math.max(alpha, bestScore); // Update alpha
-                    if (beta <= alpha) { //Beta cut-off
+                    if (beta <= alpha) { // Beta cut-off
                         break;
                     }
 
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the exception thrown by Game.result)
+                    // Handle the situation where the move is not valid (for example, catching the
+                    // exception thrown by Game.result)
                 }
             }
         } else {
@@ -94,20 +97,21 @@ public class Minimax {
                     bestScore = Math.min(bestScore, score);
 
                     beta = Math.min(beta, bestScore); // Update beta
-                    if (beta <= alpha) { // Alpha cut-off 
+                    if (beta <= alpha) { // Alpha cut-off
                         break;
                     }
 
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the exception thrown by Game.result)
+                    // Handle the situation where the move is not valid (for example, catching the
+                    // exception thrown by Game.result)
                 }
             }
         }
-        
+
         return bestScore;
     }
 
-     public static void play(Game game) {
+    public static void play(Game game) {
         Board.printBoard(game.getBoard());
 
         Scanner scanner = new Scanner(System.in);
@@ -115,13 +119,14 @@ public class Minimax {
 
         while (!Game.terminalTest(game)) {
             currentPlayer = Game.player(game);
-            System.out.println("Current player : " + (currentPlayer? "left":"right"));
+            System.out.println("Current player : " + (currentPlayer ? "left" : "right"));
             if (currentPlayer) {
                 // Left player (human) move
                 System.out.println("LEFT PLAYER MOVE: ");
                 String input = scanner.nextLine();
 
-                if ("-1".equals(input)) break;
+                if ("-1".equals(input))
+                    break;
 
                 try {
                     game = Game.result(game, input);
@@ -137,7 +142,6 @@ public class Minimax {
                 // Adding a log to confirm we reach this point.
                 System.out.println("Preparing to find the best move for AI...");
 
-
                 long startTime = System.currentTimeMillis();
                 String bestMove = Minimax.findBestMove(game, Minimax.MAX_DEPTH, false);
                 if (bestMove != null) {
@@ -147,21 +151,21 @@ public class Minimax {
                         System.out.println("AI successfully played: " + bestMove);
                         long endTime = System.currentTimeMillis();
                         long duration = endTime - startTime;
-                        System.out.println("It took "+ duration + "ms for the AI to make this move!");
+                        System.out.println("It took " + duration + "ms for the AI to make this move!");
                     } catch (Exception e) {
                         System.out.println("==== ERROR WITH AI MOVE ====");
 
-                    System.out.println("Error with AI move: " + e.getMessage());
-                    // Handle AI move error, possibly by choosing a different move
+                        System.out.println("Error with AI move: " + e.getMessage());
+                        // Handle AI move error, possibly by choosing a different move
                     }
                 } else {
                     System.out.println("AI has no valid moves.");
-                    // Handle the situation where AI has no moves, possibly by ending the game or skipping the turn
+                    // Handle the situation where AI has no moves, possibly by ending the game or
+                    // skipping the turn
                 }
             }
 
-
-            System.out.println("Player after move: " + (currentPlayer? "left":"right"));
+            System.out.println("Player after move: " + (currentPlayer ? "left" : "right"));
             Board.printBoard(game.getBoard());
 
             if (Game.terminalTest(game)) {
@@ -173,4 +177,3 @@ public class Minimax {
         scanner.close();
     }
 }
-
