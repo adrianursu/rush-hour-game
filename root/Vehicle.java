@@ -1,3 +1,5 @@
+package root;
+
 public class Vehicle {
     private final boolean isHero;
     private final boolean isLeft; //this only matters if isHero
@@ -9,6 +11,10 @@ public class Vehicle {
 
     public int getRowStart() {
         return rowStart;
+    }
+
+    public void setRowStart(int rowStart) {
+        this.rowStart = rowStart;
     }
 
     public int getRowEnd() {
