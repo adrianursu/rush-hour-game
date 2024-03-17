@@ -33,7 +33,7 @@ public class MiniMaxAIFunctions {
         // The scoring formula could be adjusted based on testing to see what provides
         // the best behavior.
         int score = aiDistanceToGoal - humanDistanceToGoal
-                + (humanBlockingVehicles - aiBlockingVehicles) * BLOCKING_VEHICLE_MULTIPLIER;
+                + ( - humanBlockingVehicles + aiBlockingVehicles) * BLOCKING_VEHICLE_MULTIPLIER;
 
         return isMaximisingPlayer ? score : -score; // If we are minimising, invert the score.
     }
@@ -75,7 +75,7 @@ public class MiniMaxAIFunctions {
                 v.getColEnd() < hero.getColStart()) ||
                 (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >=
                 hero.getRowStart() && v.getColStart() < hero.getColStart())) {
-                blockingCount++;
+                    blockingCount++;
                 }
             }
         }
