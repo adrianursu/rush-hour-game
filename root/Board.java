@@ -383,11 +383,6 @@ public class Board {
         System.out.println();
     }
 
-    public int getTrueWidth() {
-
-        return TRUE_WIDTH;
-    }
-
     public int getNumberOfObstacleVehiclesFromHeroToGoal(boolean isForLeftHero) {
         int count = 0;
 
