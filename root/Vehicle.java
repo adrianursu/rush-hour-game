@@ -18,7 +18,7 @@ public class Vehicle {
     }
 
     public int getRowEnd() {
-        return rowStart + length - 1;
+        return isVertical? rowStart + length - 1 : rowStart;
     }
 
     public int getColStart() {
@@ -26,7 +26,7 @@ public class Vehicle {
     }
 
     public int getColEnd() {
-        return colStart + length - 1;
+        return isVertical? colStart : colStart + length - 1;
     }
 
     public int getLength() {
