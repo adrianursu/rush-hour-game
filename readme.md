@@ -27,6 +27,18 @@ javac Main.java
 ```bash
 java Main
 ```
+## Choosing the algorithm
+Running the java Main command will prompt you to choose between 5 algorithms.
+
+| Command | Description |
+|---------|-------------|
+| `1`| For H-Minimax|
+| `2`| For Monte-Carlo Tree Search v1 |
+| `3`| For Monte-Carlo Tree Search v2 |
+| `4`| For Monte-Carlo Tree Search v3 |
+| `5`| For Monte-Carlo Tree Search v4|
+|`Anything Else`| If anything but 1,2,3 or 4 is entered, the program will choose Minimax Algorithm.|
+
 ## Game Controls Examples
 
 | Command | Description |
