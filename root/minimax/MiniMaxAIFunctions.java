@@ -7,35 +7,114 @@ public class MiniMaxAIFunctions {
 
     // Constants for scoring
     private static final int WINNING_SCORE = 1000000; // A score representing a win
-    private static final int BLOCKING_VEHICLE_MULTIPLIER = 10; // A multiplier for blocking vehicles
 
     public int evaluate(Board board, boolean isMaximisingPlayer) {
-        // If the game is won by the maximising player (AI), return a large positive
-        // value.
         if (hasWon(board, isMaximisingPlayer)) {
             return WINNING_SCORE;
-        }
-
-        // If the game is won by the minimising player (human), return a large negative
-        // value.
-        if (hasWon(board, !isMaximisingPlayer)) {
+        } else if (hasWon(board, !isMaximisingPlayer)) {
             return -WINNING_SCORE;
         }
 
-        // Evaluate the distance to the goal for both players.
-        int aiDistanceToGoal = distanceToGoal(board, false);
-        int humanDistanceToGoal = distanceToGoal(board, true);
+        int score = 0;
 
-        // Count the number of blocking vehicles for both players.
-        int aiBlockingVehicles = numOfBlockingVehicles(board, false);
-        int humanBlockingVehicles = numOfBlockingVehicles(board, true);
+        // Path Clarity
+        score += evaluatePathClarity(board, isMaximisingPlayer);
 
-        // The scoring formula could be adjusted based on testing to see what provides
-        // the best behavior.
-        int score = aiDistanceToGoal - humanDistanceToGoal
-                + (humanBlockingVehicles - aiBlockingVehicles) * BLOCKING_VEHICLE_MULTIPLIER;
+        // Mobility
+        score += evaluateMobility(board, isMaximisingPlayer);
 
-        return isMaximisingPlayer ? score : -score; // If we are minimising, invert the score.
+        // Strategic Blocking
+        score += evaluateStrategicBlocking(board, isMaximisingPlayer);
+
+        // Board Shifting Potential
+        score += evaluateBoardShiftingPotential(board, isMaximisingPlayer);
+
+        return isMaximisingPlayer ? score : -score;
+    }
+
+    private int evaluatePathClarity(Board board, boolean isMaximisingPlayer) {
+        int pathClarityScore = 0;
+        Vehicle hero = board.getHeroVehicle(isMaximisingPlayer);
+        // Assuming horizontal movement towards the goal
+        int obstacles = board.getNumOfBlockingVehicles(hero.getId());
+
+        // Inverting the number of obstacles to reflect that fewer obstacles mean a
+        // clearer path.
+        pathClarityScore = (Board.TRUE_WIDTH - hero.getColStart()) - obstacles * 100; // Weighted for impact
+
+        return pathClarityScore;
+    }
+
+    private int evaluateMobility(Board board, boolean isMaximisingPlayer) {
+        int mobilityScore = 0;
+        Vehicle hero = board.getHeroVehicle(isMaximisingPlayer);
+
+        // Check potential moves in each direction, assuming +/-1 for simplicity
+        int possibleMoves = 0;
+        try {
+            board.moveVehicle(hero, 1);
+            possibleMoves++;
+            board.moveVehicle(hero, -1); // Revert move
+        } catch (Exception ignored) {
+        }
+        try {
+            board.moveVehicle(hero, -1);
+            possibleMoves++;
+            board.moveVehicle(hero, 1); // Revert move
+        } catch (Exception ignored) {
+        }
+
+        mobilityScore = possibleMoves * 50; // Assign a value to each possible move
+
+        return mobilityScore;
+    }
+
+    private int evaluateStrategicBlocking(Board board, boolean isMaximisingPlayer) {
+        int strategicBlockingScore = 0;
+        Vehicle enemyHero = board.getHeroVehicle(!isMaximisingPlayer);
+        int blockingVehicles = board.getNumOfBlockingVehicles(enemyHero.getId());
+
+        // The more vehicles blocking the opponent, the higher the score
+        strategicBlockingScore = blockingVehicles * 150; // Weighted for impact
+
+        return strategicBlockingScore;
+    }
+
+    private int evaluateBoardShiftingPotential(Board board, boolean isMaximisingPlayer) {
+        int shiftingPotentialScore = 0;
+
+        // Check potential shifts and their impact on the path clarity for the hero car
+        Vehicle hero = board.getHeroVehicle(isMaximisingPlayer);
+        int[] potentialShifts = isMaximisingPlayer
+                ? board.getPossibleOffsetsForRightPartMovement().stream().mapToInt(i -> i).toArray()
+                : board.getPossibleOffsetsForLeftPartMovement().stream().mapToInt(i -> i).toArray();
+
+        for (int shift : potentialShifts) {
+            // Perform the shift hypothetically and evaluate the path clarity post-shift
+            Board hypotheticalBoard = board.copy();
+            try {
+                if (isMaximisingPlayer) {
+                    hypotheticalBoard.moveRightPart(shift);
+                } else {
+                    hypotheticalBoard.moveLeftPart(shift);
+                }
+
+                int pathClarityPostShift = evaluatePathClarity(hypotheticalBoard, isMaximisingPlayer);
+                shiftingPotentialScore = Math.max(shiftingPotentialScore, pathClarityPostShift);
+
+                // Undo the hypothetical shift to restore the board to its original state
+                if (isMaximisingPlayer) {
+                    hypotheticalBoard.moveRightPart(-shift);
+                } else {
+                    hypotheticalBoard.moveLeftPart(-shift);
+                }
+
+            } catch (Exception e) {
+                // If the shift is not possible, continue with the next potential shift
+            }
+        }
+
+        return shiftingPotentialScore;
     }
 
     private boolean hasWon(Board board, boolean isMaximisingPlayer) {
@@ -44,41 +123,5 @@ public class MiniMaxAIFunctions {
         // right edge for the human.
         Vehicle heroVehicle = board.getHeroVehicle(isMaximisingPlayer);
         return isMaximisingPlayer ? heroVehicle.getColEnd() == Board.TRUE_WIDTH - 1 : heroVehicle.getColStart() == 0;
-    }
-
-    private int distanceToGoal(Board board, boolean isMaximisingPlayer) {
-        // Calculate the distance of the hero vehicle to the goal.
-        // Assuming that for AI the goal is to reach the left edge (column 0) and for
-        // the human is the right edge (last column).
-        Vehicle heroVehicle = board.getHeroVehicle(isMaximisingPlayer);
-        return isMaximisingPlayer ? Board.TRUE_WIDTH - 1 - heroVehicle.getColEnd() : heroVehicle.getColStart();
-    }
-
-    private int numOfBlockingVehicles(Board board, boolean isMaximisingPlayer) {
-        Vehicle hero = board.getHeroVehicle(isMaximisingPlayer);
-        int blockingCount = 0;
-
-        // Assuming vertical movement is up and down, and horizontal is left and right.
-        for (Vehicle v : board.getVehicles()) {
-            if (isMaximisingPlayer) {
-                // For the human, assuming the goal is on the right, we check vehicles on the
-                // right of the hero.
-                if ((!v.isVertical() && v.getRowStart() == hero.getRowStart() && v.getColStart() > hero.getColEnd()) ||
-                        (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >= hero.getRowStart()
-                                && v.getColStart() > hero.getColEnd())) {
-                    blockingCount++;
-                }
-                // } else {
-                // // For the AI, we're assuming the goal is on the left, so we check vehicles
-                // on the left of the hero.
-                // if ((!v.isVertical() && v.getRowStart() == hero.getRowStart() &&
-                // v.getColEnd() < hero.getColStart()) ||
-                // (v.isVertical() && v.getRowStart() <= hero.getRowStart() && v.getRowEnd() >=
-                // hero.getRowStart() && v.getColStart() < hero.getColStart())) {
-                // blockingCount++;
-                // }
-            }
-        }
-        return blockingCount;
     }
 }

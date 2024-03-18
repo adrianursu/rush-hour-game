@@ -34,8 +34,7 @@ public class Minimax {
                         bestMove = move;
                     }
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the
-                    // exception thrown by Game.result)
+                    e.getStackTrace();
                 }
             }
         } else {
@@ -50,13 +49,11 @@ public class Minimax {
                         bestMove = move;
                     }
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the
-                    // exception thrown by Game.result)
+                    e.getStackTrace();
                 }
             }
         }
         System.out.println("Best move is: " + bestMove + " and the score is: " + bestScore);
-        System.out.println(Game.actions(game));
         return bestMove;
     }
 
@@ -83,8 +80,7 @@ public class Minimax {
                     }
 
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the
-                    // exception thrown by Game.result)
+                    e.getStackTrace();
                 }
             }
         } else {
@@ -102,8 +98,7 @@ public class Minimax {
                     }
 
                 } catch (Exception e) {
-                    // Handle the situation where the move is not valid (for example, catching the
-                    // exception thrown by Game.result)
+                    e.getStackTrace();
                 }
             }
         }
