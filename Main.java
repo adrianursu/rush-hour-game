@@ -5,6 +5,7 @@ import root.mcts.Mcst1;
 import root.mcts.Mcst2;
 import root.mcts.Mcst4;
 import root.mcts.Mcts3;
+import root.two_player_console_ver.TwoPlayerConsoleVersion;
 
 import java.util.Random;
 
@@ -12,11 +13,11 @@ public class Main {
     public static void main(String[] args) {
         Game game = getRandomGame();
 
-//        TwoPlayerConsoleVersion.play(game);
+        TwoPlayerConsoleVersion.play(game);
 //        Mcst1.play(game);
 //        Mcst2.play(game);
 //        Mcts3.play(game);
-        Mcst4.play(game);
+//        Mcst4.play(game);
     }
 
     public static Game getRandomGame() {
