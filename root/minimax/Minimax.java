@@ -10,7 +10,7 @@ public class Minimax {
     // The depth is how far the algorithm will look ahead in the game.
     // Adjust this value based on how complex the game is and how long you can wait
     // for the AI to make a move.
-    public static final int MAX_DEPTH = 5;
+    public static final int MAX_DEPTH = 3;
 
     public static String findBestMove(Game game, int depth, boolean isMaximisingPlayer) {
         System.out.println("Going in the findBestMove method");
