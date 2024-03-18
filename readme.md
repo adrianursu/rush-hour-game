@@ -10,7 +10,7 @@ Before you begin, ensure you have met the following requirements:
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of the project up and running on your local machine in order to test the Rush Hour Shift Game.
 
 ### Cloning the Repository and Running The Application
 
