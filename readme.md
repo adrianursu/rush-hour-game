@@ -16,13 +16,18 @@ These instructions will get you a copy of the project up and running on your loc
 
 Follow these commands in the terminal in order to clone the repository and running the application.
 ```bash
-
 git clone https://github.com/adrianursu/rush-hour-game
+```
+```bash
 cd rush-hour-game/
+```
+```bash
 javac Main.java
+```
+```bash
 java Main
-
-## Game Controls
+```
+## Game Controls Examples
 
 | Command | Description |
 |---------|-------------|
