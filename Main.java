@@ -56,7 +56,7 @@ public class Main {
         BoardSetups[] setups = BoardSetups.values();
         int index = random.nextInt(setups.length);
         // root.BoardSetups randomSetup = setups[index];
-        BoardSetups randomSetup = setups[0];
+        BoardSetups randomSetup = setups[index];
 
         randomSetup.initialize(b);
 
