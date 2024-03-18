@@ -6,6 +6,7 @@ import root.mcts.Mcst2;
 import root.mcts.Mcst4;
 import root.mcts.Mcts3;
 import root.minimax.Minimax;
+import root.two_player_console_ver.TwoPlayerConsoleVersion;
 
 import java.util.Random;
 import java.util.Scanner;
@@ -20,7 +21,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(
-                "Select the AI algorithm and press ENTER: \n 1 for Minimax \n 2 for MCTS1 \n 3 for MCTS2 \n 4 for MCTS3 \n 5 for MCTS4 ");
+                "Select the AI algorithm and press ENTER: \n 1 for Minimax \n 2 for MCTS1 \n 3 for MCTS2 \n 4 for MCTS3 \n 5 for MCTS4 \n 6 for 2 player version (no AI)");
         int choice = scanner.nextInt();
 
         Game game = getRandomGame();
@@ -41,6 +42,8 @@ public class Main {
             case 5:
                 Mcst4.play(game);
                 break;
+            case 6:
+                TwoPlayerConsoleVersion.play(game);
             default:
                 System.out.println("Invalid choice, choosing Minimax as your AI algorithm");
                 Minimax.play(game);
